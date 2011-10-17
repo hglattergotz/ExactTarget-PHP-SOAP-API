@@ -54,8 +54,6 @@ class ETCore
       
       throw new Exception($msg);
     }
-    
-//    uDebug::echoVar('Result', $result);
   }
 
   public static function toSoapVar($object, $name)
