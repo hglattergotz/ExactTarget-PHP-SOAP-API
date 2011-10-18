@@ -37,6 +37,34 @@ class ETCore
     return $client;
   }
   
+  public static function upsert($objects)
+  {
+    try
+    {
+      $soapClient = self::getClient();
+      
+      $uo = new ExactTarget_UpdateOptions();
+      $uo->SaveOptions = array();
+      
+      $so = new ExactTarget_SaveOption();
+      $so->PropertyName = '*';
+      $so->SaveAction = ExactTarget_SaveAction::UpdateAdd;
+      
+      $uo->SaveOptions[] = $so;
+      $uoSo = ETCore::toSoapVar($uo, 'UpdateOptions');
+      
+      $request = new ExactTarget_UpdateRequest();
+      $request->Options = $uoSo;
+      $request->Objects = $objects;
+      
+      return $soapClient->Update($request);
+    }
+    catch (Exception $e)
+    {
+      throw new Exception(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
+    }
+  }
+  
   public static function evaluateSoapResult($result)
   {
     if ($result->OverallStatus != 'OK')
@@ -98,6 +126,33 @@ class ETCore
     {
       throw $e;
     }
+  }
+  
+  /**
+   * Utility method that reduces code volume by constucting an APIProperty
+   * object.
+   * 
+   * @param string $name  The name of the property
+   * @param string $value The value of the property
+   * 
+   * @return ExactTarget_APIProperty 
+   */
+  public static function newAPIProperty($name, $value)
+  {
+    $prop = new ExactTarget_APIProperty();
+    $prop->Name = $name;
+    $prop->Value = $value;
+    
+    return $prop;
+  }
+  
+  public static function newAttribute($name, $value)
+  {
+    $attr = new ExactTarget_Attribute();
+    $attr->Name = $name;
+    $attr->Value = $value;
+    
+    return $attr;
   }
 }
 

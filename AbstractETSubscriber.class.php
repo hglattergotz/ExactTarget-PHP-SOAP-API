@@ -3,7 +3,7 @@ abstract class AbstractETSubscriber
 {
   protected $propertyNames = array(
       'Addresses',                    //	SubscriberAddress[]	Indicates addresses belonging to a subscriber.
-      'Attributes',                   //	Attribute[]	Specifies attributes associated with an object.
+//      'Attributes',                   //	Attribute[]	Specifies attributes associated with an object.
       'Client',                       //	ClientID	Specifies the account ownership and context of an object.
       'CorrelationID',                //	xsd:string	Identifies correlation of objects across several requests.
       'CreatedDate',                  //	xsd:dateTime	Read-only date and time of the object's creation.
@@ -30,9 +30,13 @@ abstract class AbstractETSubscriber
       'UnsubscribedDate'      
   );
   protected $properties = array();
-  protected $attributeNames;
+  protected $requiredProperties = array();
+  protected $modifiedProperties = array();
+  protected $attributeNames = array();
   protected $attributes = array();
-  protected $requiredAttributes;
+  protected $requiredAttributes = array();
+  protected $modifiedAttributes = array();
+  protected $soapClient;
 
   public function __construct()
   {
@@ -48,20 +52,41 @@ abstract class AbstractETSubscriber
       $this->attributes[$aName] = null;
     }
     
+    $requiredProperties = array('EmailAddress');
+    $this->requiredProperties = array_unique(array_merge($requiredProperties, $this->requiredProperties));
+    
     $this->soapClient = ETCore::getClient();
   }
   
   /**
-   * This method must be implemented by the derived class and takes care of
-   * configuring the object for a specific data extension.
+   * This method must be implemented by the derived class handles the custom
+   * attribute configuration.
    */
   abstract protected function configure();
 
   public function fromArray($data)
   {
-    
+    foreach ($data as $k => $v)
+    {
+      if ($v === 'Attributes')
+      {
+        foreach ($v as $ak => $av)
+        {
+          $this->_setAttribute($ak, $av);
+        }
+      }
+      else
+      {
+        $this->_setProperty($k, $v);
+      }
+    }
   }
   
+  /**
+   * Populate the subscriber object with the result returned from a SOAP result.
+   * 
+   * @param type $soap 
+   */
   public function fromSoapResult($soap)
   {
     $res = (array)$soap;
@@ -77,83 +102,82 @@ abstract class AbstractETSubscriber
         
         foreach ($v as $attribute)
         {
-          $this->setAttribute($attribute->Name, $attribute->Value);
+          $this->_setAttribute($attribute->Name, $attribute->Value);
         }
       }
       else
       {
-        $this->setProperty($k, $v);
+        $this->_setProperty($k, $v);
       }
     }
   }
 
+  public function toArray()
+  {
+    $array = $this->properties;
+    $array['Attributes'] = $this->attributes;
+    
+    return $array;
+  }
+  
+  
   public function save()
   {
-    $subscriber = new ExactTarget_Subscriber();
-    $subscriber->EmailAddress = "help@example.com";
-    $subscriber->SubscriberKey = "help@example.com";
-
-//        // This section is needed if you are adding a subscriber to a Lock and Publish account using an enterprise API user
-//        $cl = new ExactTarget_ClientID();
-//        $cl->ID = 123;
-//        $subscriber->Client = $cl;
-//        $subscriber->Lists = array();   
-    
-    $ExampleAttribute1 = new ExactTarget_Attribute();
-    $ExampleAttribute1->Name = "First Name";
-    $ExampleAttribute1->Value = "Ding";   
-
-    $ExampleAttribute2 = new ExactTarget_Attribute();
-    $ExampleAttribute2->Name = "Last Name";
-    $ExampleAttribute2->Value = "Dong";
-        
-    $subscriber->Attributes=array($ExampleAttribute1,$ExampleAttribute2);      
-
-//        $list = new ExactTarget_SubscriberList();
-//        $list->ID = "12345"; // This is the ID of the subscriber list             
-//        $subscriber->Lists[] = $list;
-
-        // This is the section needed to define it as an "Upsert"
-    $so = new ExactTarget_SaveOption();
-    $so->PropertyName = "*";
-    $so->SaveAction = ExactTarget_SaveAction::UpdateAdd;            
-    $soe = new SoapVar($so, SOAP_ENC_OBJECT, 'SaveOption', "http://exacttarget.com/wsdl/partnerAPI");            
-    $opts = new ExactTarget_UpdateOptions();            
-    $opts->SaveOptions = array($soe);
-
-        // Below are examples of updating the subscriber status to active or unsub
-        //$subscriber->Status = ExactTarget_SubscriberStatus::Active;
-        //$subscriber->Status = ExactTarget_SubscriberStatus::Unsubscribed;
-
-    $object = new SoapVar($subscriber, SOAP_ENC_OBJECT, 'Subscriber', "http://exacttarget.com/wsdl/partnerAPI");
-
-    $request = new ExactTarget_CreateRequest();
-    $request->Options = $opts;
-    $request->Objects = array($object);            
-
-    $result = $this->soapClient->Create($request);
-
+    $objects = array($this->makeSoapVar());
+    $result = ETCore::upsert($objects);
     ETCore::evaluateSoapResult($result);
+    
+    $this->clearModified();
     
     return true;
   }
   
   public function delete()
   {
+    $obj = $this->makeSoapVar(true, false);
     
+    $request = new ExactTarget_DeleteRequest();
+    $request->Options = null;
+    $request->Objects = array($obj);
+
+    $result = $this->soapClient->Delete($request);
   }
   
-  protected function setProperty($name, $value)
+  public function setProperty($name, $value)
+  {
+    return $this->_setProperty($name, $value);
+  }
+  
+  public function setAttribute($name, $value)
+  {
+    return $this->_setAttribute($name, $value);
+  }
+  
+  protected function _setProperty($name, $value)
   {
     if (!array_key_exists($name, $this->properties))
     {
       throw new Exception('Invalid property '.$name.'!');
     }
     
+    if ($name === 'Attributes')
+    {
+      foreach ($value as $n => $v)
+      {
+        $this->_setAttribute($n, $v);
+      }
+    }
+    else
+    {
+      $this->modifiedProperties[] = $name;
+    }
+    
     $this->properties[$name] = $value;
+    
+    return true;
   }
   
-  protected function setAttribute($name, $value)
+  protected function _setAttribute($name, $value)
   {
     if (!array_key_exists($name, $this->attributes))
     {
@@ -161,5 +185,76 @@ abstract class AbstractETSubscriber
     }
     
     $this->attributes[$name] = $value;
+    $this->modifiedAttributes[] = $name;
+    
+    return true;
+  }
+
+  protected function checkRequiredProperties()
+  {
+    foreach ($this->requiredAttributes as $required)
+    {
+      if ($this->attributes[$required] === null || $this->attributes[$required] === '')
+      {
+        throw new Exception('Required attribute '.$required.' as not been set.');
+      }
+    }
+    
+    return true;
+  }
+
+  protected function checkRequiredAttributes()
+  {
+    foreach ($this->requiredProperties as $required)
+    {
+      if ($this->properties[$required] === null || $this->properties[$required] === '')
+      {
+        throw new Exception('Required property '.$required.' as not been set.');
+      }
+    }
+    
+    return true;
+  }
+
+  /**
+   * Helper method that creates a SoapVar object.
+   * 
+   * @return SoapVar 
+   */
+  protected function makeSoapVar($checkProperties = true, $checkAttributes = true)
+  {
+    if ($checkProperties)
+    {
+      $this->checkRequiredProperties();
+    }
+    
+    if ($checkAttributes)
+    {
+      $this->checkRequiredAttributes();
+    }
+    
+    $subscriber = new ExactTarget_Subscriber();
+    $this->modifiedProperties = array_unique(array_merge($this->modifiedProperties, $this->requiredProperties));
+    
+    foreach ($this->modifiedProperties as $propName)
+    {
+      $subscriber->$propName = $this->properties[$propName];
+    }
+    
+    $subscriber->Attributes = array();
+    $this->modifiedAttributes = array_unique(array_merge($this->modifiedAttributes, $this->requiredAttributes));
+    
+    foreach ($this->modifiedAttributes as $attrName)
+    {
+      $subscriber->Attributes[] = ETCore::newAttribute($attrName, $this->attributes[$attrName]);
+    }
+    
+    return ETCore::toSoapVar($subscriber, 'Subscriber');
+  }
+  
+  protected function clearModified()
+  {
+    $this->modifiedAttributes = array();
+    $this->modifiedProperties = array();
   }
 }

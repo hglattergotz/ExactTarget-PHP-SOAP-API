@@ -9,8 +9,6 @@ class ETCollection
     $this->soapClient = ETCore::getClient();
   }
 
-  abstract public function save();
-
   /**
    * Process the soap result and throw an exception if something went wrong
    * 
