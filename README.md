@@ -28,12 +28,14 @@ A Data Extension is essentially a custom table.
 To interact with a Data Extension with the following schema you simply extend the `AbstractETDataExtensionObject` and `AbstractETDataExtension` classes.
 
 **Schema**
+
     id (primary key)
     firstname
     lastname
     email
 
 **Record**
+
     class PersonDataExtensionObject extends AbstractETDataExtensionObject
     {
         protected function configure()
@@ -51,6 +53,7 @@ To interact with a Data Extension with the following schema you simply extend th
     }
 
 **Table**
+
     class PersonDataExtension extends AbstractETDataExtension
     {}
 
