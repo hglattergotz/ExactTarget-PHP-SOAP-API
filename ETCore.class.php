@@ -37,7 +37,7 @@ class ETCore
     return $client;
   }
   
-  public static function upsert($objects)
+  protected static function _update($objects, $saveAction)
   {
     try
     {
@@ -48,7 +48,7 @@ class ETCore
       
       $so = new ExactTarget_SaveOption();
       $so->PropertyName = '*';
-      $so->SaveAction = ExactTarget_SaveAction::UpdateAdd;
+      $so->SaveAction = $saveAction;
       
       $uo->SaveOptions[] = $so;
       $uoSo = ETCore::toSoapVar($uo, 'UpdateOptions');
@@ -63,6 +63,16 @@ class ETCore
     {
       throw new Exception(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
     }
+  }
+  
+  public static function upsert($objects)
+  {
+    return self::_update($objects, ExactTarget_SaveAction::UpdateAdd);
+  }
+  
+  public static function update($objects)
+  {
+    return self::_update($objects, ExactTarget_SaveAction::UpdateOnly);
   }
   
   public static function evaluateSoapResult($result)

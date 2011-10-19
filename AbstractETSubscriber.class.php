@@ -31,6 +31,7 @@ abstract class AbstractETSubscriber
   );
   protected $properties = array();
   protected $requiredProperties = array();
+  protected $requiredUpdateProperties = array();
   protected $modifiedProperties = array();
   protected $attributeNames = array();
   protected $attributes = array();
@@ -120,9 +121,21 @@ abstract class AbstractETSubscriber
     return $array;
   }
   
-  
+  /**
+   * Handles both insert and update depending on the need. Use this method to
+   * avoid larget numbers of errors from the soap api if records do not yet
+   * exist.
+   * 
+   * Required properties: EmailAddress (and SubscriberKey, if that feature is
+   *                      enabled for your account)
+   * 
+   * @return boolean
+   * @throws Exception
+   */
   public function save()
   {
+    $this->checkRequiredProperties($this->requiredProperties);
+    $this->checkRequiredAttributes();
     $objects = array($this->makeSoapVar());
     $result = ETCore::upsert($objects);
     ETCore::evaluateSoapResult($result);
@@ -132,15 +145,44 @@ abstract class AbstractETSubscriber
     return true;
   }
   
+  /**
+   * An explicit update. The reason for this is that for an update the number
+   * of required properties is different that of an insert.
+   * 
+   * Required properties: EmailAddress, SubscriberKey, or ID.
+   *
+   * @return boolean
+   * @throws Exception
+   */
+  public function update()
+  {
+    $this->checkRequiredProperties($this->requiredUpdateProperties);
+    $this->checkRequiredAttributes();
+    $objects = array($this->makeSoapVar());
+    $result = ETCore::update($objects);
+    ETCore::evaluateSoapResult($result);
+    
+    $this->clearModified();
+    
+    return true;
+  }
+  
+  /**
+   * Delete the record from the list.
+   */
   public function delete()
   {
-    $obj = $this->makeSoapVar(true, false);
+    $this->checkRequiredProperties($this->requiredProperties);
+    $obj = $this->makeSoapVar();
     
     $request = new ExactTarget_DeleteRequest();
     $request->Options = null;
     $request->Objects = array($obj);
 
     $result = $this->soapClient->Delete($request);
+    ETCore::evaluateSoapResult($result);
+    
+    return true;
   }
   
   public function setProperty($name, $value)
@@ -190,7 +232,7 @@ abstract class AbstractETSubscriber
     return true;
   }
 
-  protected function checkRequiredProperties()
+  protected function checkRequiredAttributes()
   {
     foreach ($this->requiredAttributes as $required)
     {
@@ -203,9 +245,9 @@ abstract class AbstractETSubscriber
     return true;
   }
 
-  protected function checkRequiredAttributes()
+  protected function checkRequiredProperties($requiredProps)
   {
-    foreach ($this->requiredProperties as $required)
+    foreach ($requiredProps as $required)
     {
       if ($this->properties[$required] === null || $this->properties[$required] === '')
       {
@@ -221,18 +263,8 @@ abstract class AbstractETSubscriber
    * 
    * @return SoapVar 
    */
-  protected function makeSoapVar($checkProperties = true, $checkAttributes = true)
+  protected function makeSoapVar()
   {
-    if ($checkProperties)
-    {
-      $this->checkRequiredProperties();
-    }
-    
-    if ($checkAttributes)
-    {
-      $this->checkRequiredAttributes();
-    }
-    
     $subscriber = new ExactTarget_Subscriber();
     $this->modifiedProperties = array_unique(array_merge($this->modifiedProperties, $this->requiredProperties));
     
