@@ -89,7 +89,7 @@ To interact with a Data Extension with the following schema you simply extend th
     $person->fromArray($personData);
     $person->save();
 
-``` php
+```php
 class test
 {
    protected $test
