@@ -1,18 +1,45 @@
 <?php
 class ETCore
 {
+  /**
+   * Hydrate results as arrays
+   */
   const HYDRATE_ARRAY  = 1;
   
+  /**
+   * Hydrate results as records (objects)
+   */
   const HYDRATE_RECORD = 2;
   
+  /**
+   * @var ETCore holds an instance of ETCore (singleton)
+   */
   protected static $instance = null;
   
+  /**
+   * @var string The username for the ExactTarget account
+   */
   protected $userName;
   
+  /**
+   * @var string The password for the ExactTarget account
+   */
   protected $password;
   
+  /**
+   * @var string The wsdl url
+   */
   protected $wsdl = 'https://webservice.exacttarget.com/etframework.wsdl';
   
+  /**
+   * Create an instance of the ETCore class and store it in the static instance
+   * variable.
+   * Essentially this allows for setting the ExactTarget credentials once per
+   * script.
+   * 
+   * @param string $userName
+   * @param string $password 
+   */
   public static function initialize($userName, $password)
   {
     $instance = new self();
@@ -22,6 +49,11 @@ class ETCore
     self::$instance = $instance;
   }
   
+  /**
+   * Return an instance of the fully configured ExactTarget soap client.
+   * 
+   * @return ExactTargetSoapClient 
+   */
   public static function getClient()
   {
     if (self::$instance === null)
@@ -37,6 +69,15 @@ class ETCore
     return $client;
   }
   
+  /**
+   * ExactTarget SOAP update that allows the update action to be specified.
+   * 
+   * @param array   $objects Array of SOAP objects to be updated
+   * @param integet $saveAction A constant integer specifying the action.
+   * 
+   * @return ExactTarget SOAP response
+   * $throws Exception
+   */
   protected static function _update($objects, $saveAction)
   {
     try
@@ -65,16 +106,35 @@ class ETCore
     }
   }
   
+  /**
+   * Generic upsert operation. Updates existing records and inserts them if they
+   * do not yet exist.
+   * 
+   * @param type $objects
+   * @return type 
+   */
   public static function upsert($objects)
   {
     return self::_update($objects, ExactTarget_SaveAction::UpdateAdd);
   }
   
+  /**
+   * Explicit update operation.
+   * 
+   * @param type $objects
+   * @return type 
+   */
   public static function update($objects)
   {
     return self::_update($objects, ExactTarget_SaveAction::UpdateOnly);
   }
   
+  /**
+   * Utility method for parsing the SOAP response and throwing an exception with
+   * a the appropriate error message.
+   * 
+   * @param type $result 
+   */
   public static function evaluateSoapResult($result)
   {
     if ($result->OverallStatus != 'OK')
@@ -94,13 +154,21 @@ class ETCore
     }
   }
 
+  /**
+   * Encode an object as a SOAP variable.
+   * 
+   * @param type $object
+   * @param type $name
+   * @return SoapVar 
+   */
   public static function toSoapVar($object, $name)
   {
     return new SoapVar($object, SOAP_ENC_OBJECT, $name, 'http://exacttarget.com/wsdl/partnerAPI');
   }
   
   /**
-   *
+   * Get the version history from the ET SOAP API.
+   * 
    * @return type 
    */
   public static function getVersionHistory()
@@ -120,7 +188,8 @@ class ETCore
   }
 
   /**
-   *
+   * Get the ET system status.
+   * 
    * @return type 
    */
   public static function getSystemStatus()
@@ -139,7 +208,7 @@ class ETCore
   }
   
   /**
-   * Utility method that reduces code volume by constucting an APIProperty
+   * Utility method that reduces code volume by constructing an APIProperty
    * object.
    * 
    * @param string $name  The name of the property
@@ -156,6 +225,15 @@ class ETCore
     return $prop;
   }
   
+  /**
+   * Utility method that reduces code volume by constructing an Attribute
+   * object.
+   * 
+   * @param string $name  The name of the attribute
+   * @param string $value The value of the attribute
+   * 
+   * @return ExactTarget_Attribute
+   */
   public static function newAttribute($name, $value)
   {
     $attr = new ExactTarget_Attribute();

@@ -60,6 +60,7 @@ To interact with a Data Extension with the following schema you simply extend th
 *Important:* The two related classes must have the same name, but the Record class has `Object` appended to it.
 
 **Usage example:**
+
 *Fetch a record from the data extension and modify it.*
 
     ETCore::initialize('myusername', 'mypassword');
@@ -71,9 +72,15 @@ To interact with a Data Extension with the following schema you simply extend th
     $person->save();
 
 *Create a new record*
+
     ETCore::initialize('myusername', 'mypassword');
     
-    $personData = array('id' => 123, 'firstname' => 'Joe', 'lastname' => 'Smith', 'email' => 'joe@smith.com');
+    $personData = array(
+        'id' => 123,
+        'firstname' => 'Joe',
+        'lastname' => 'Smith',
+        'email' => 'joe@smith.com'
+    );
     $person = new PersonDataExtensionObject();
     $person->fromArray($personData);
     $person->save();
