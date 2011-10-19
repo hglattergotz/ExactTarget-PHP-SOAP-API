@@ -50,7 +50,7 @@ class ETCore
   }
   
   /**
-   * Return an instance of the fully configured ExactTarget soap client.
+   * Return an instance of the fully configured ExactTarget SOAP client.
    * 
    * @return ExactTargetSoapClient 
    */

@@ -3,6 +3,10 @@ ExactTarget SOAP API
 
 Provides *synchronous* CRUD operations on **Data Extensions** and **Subscriber Lists** by exposing a Doctrine like API (Record, Table, Collection).
 
+### Requirements
+* See [ExactTarget PHP getting started guide](http://wiki.memberlandingpages.com/030_Developer_Documentation/020_Web_Service_Guide/Getting_Started_Developers_and_the_ExactTarget_API/Connecting_to_the_API_using_PHP).
+* If you are not using an auto-loader you will have to add require() statements.
+
 ETCore
 ------
 This class provides two essential mechanisms that are needed for all operations as well as a number of utility methods.
@@ -40,7 +44,7 @@ To interact with a Data Extension with the following schema you simply extend th
     {
         protected function configure()
         {
-            $this->customerKey = 'Person_DE';
+            $this->customerKey = 'my customer key for this DE';
             $this->primaryKeys = array('id');
             $this->requiredFields = array('id', 'email');
             $this->fields = array(
