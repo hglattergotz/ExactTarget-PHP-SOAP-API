@@ -88,4 +88,10 @@ To interact with a Data Extension with the following schema you simply extend th
     $person = new PersonDataExtensionObject();
     $person->fromArray($personData);
     $person->save();
-    
+
+``` php
+class test
+{
+   protected $test
+}
+```
