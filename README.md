@@ -14,10 +14,64 @@ Another important method is `ETCore::getClient()`, which returns an instance of 
 Record, Table, Collection
 -------------------------
 To interact with the Soap API the library provides the basic classes that represent a Record, Table and Collection.
+
 The names are pretty self explanatory and if you are familiar with Doctrine this will be very familiar.
-The record class allows for manipulation of a single record (CRUD).
-The table class exposes queries on the entire table and returns one or more records in form of a collection.
-A collection is a container class that holds a variable number of record objects and provides various methods to iterate over them or to create, update or delete them with a single operation.
+
+* The record class allows for manipulation of a single record (CRUD).
+* The table class exposes queries on the entire table and returns one or more records in form of a collection.
+* A collection is a container class that holds a variable number of record objects and provides various methods to iterate over them or to create, update or delete them with a single operation.
 
 Data Extensions
 ---------------
+A Data Extension is essentially a custom table.
+
+To interact with a Data Extension with the following schema you simply extend the `AbstractETDataExtensionObject` and `AbstractETDataExtension` classes.
+
+**Schema**
+    id (primary key)
+    firstname
+    lastname
+    email
+
+**Record**
+    class PersonDataExtensionObject extends AbstractETDataExtensionObject
+    {
+        protected function configure()
+        {
+            $this->customerKey = 'Person_DE';
+            $this->primaryKeys = array('id');
+            $this->requiredFields = array('id', 'email');
+            $this->fields = array(
+                'id',
+                'firstname',
+                'lastname',
+                'email'
+            );
+        }
+    }
+
+**Table**
+    class PersonDataExtension extends AbstractETDataExtension
+    {}
+
+*Important:* The two related classes must have the same name, but the Record class has `Object` appended to it.
+
+**Usage example:**
+*Fetch a record from the data extension and modify it.*
+
+    ETCore::initialize('myusername', 'mypassword');
+    
+    $personDE = new PersonDataExtension();
+    $allPeople = $personDE->findAll(ETCore::HYDRATE_RECORD);
+    $person = $allPeople->getFirst();
+    $person->setfirstname('Joe');
+    $person->save();
+
+*Create a new record*
+    ETCore::initialize('myusername', 'mypassword');
+    
+    $personData = array('id' => 123, 'firstname' => 'Joe', 'lastname' => 'Smith', 'email' => 'joe@smith.com');
+    $person = new PersonDataExtensionObject();
+    $person->fromArray($personData);
+    $person->save();
+    
