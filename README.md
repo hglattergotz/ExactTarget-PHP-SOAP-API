@@ -34,13 +34,16 @@ The names are pretty self explanatory and if you are familiar with Doctrine this
 To interact with a Data Extension with the following schema you simply extend the `AbstractETDataExtensionObject` and `AbstractETDataExtension` classes.
 
 **Schema**
+
 ~~~
 id (primary key)
 firstname
 lastname
 email
 ~~~
+
 **Record**
+
 ~~~
 class PersonDataExtensionObject extends AbstractETDataExtensionObject
 {
@@ -58,14 +61,18 @@ class PersonDataExtensionObject extends AbstractETDataExtensionObject
     }
 }
 ~~~
+
 **Table**
+
 ~~~
 class PersonDataExtension extends AbstractETDataExtension
 {}
 ~~~
+
 *Important:* The two related classes must have the same name, but the Record class has `Object` appended to it.
 
 *Fetch a record from the data extension and modify it.*
+
 ~~~
 ETCore::initialize('myusername', 'mypassword');
     
@@ -77,6 +84,7 @@ $person->save();
 ~~~
 
 *Create a new record*
+
 ~~~
 ETCore::initialize('myusername', 'mypassword');
     
