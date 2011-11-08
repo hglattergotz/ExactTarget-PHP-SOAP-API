@@ -2,7 +2,7 @@
 abstract class AbstractETDataExtensionObject
 {
   protected $fields;
-  protected $modifiedFiels;
+  protected $modifiedFiels = array();
   protected $primaryKeys;
   protected $requiredFields;
   protected $data;
@@ -14,9 +14,9 @@ abstract class AbstractETDataExtensionObject
     $this->configure();
     $this->data = array();
     
-    foreach ($this->properties as $property)
+    foreach ($this->fields as $field)
     {
-      $this->data[$property] = null;
+      $this->data[$field] = null;
     }
     
     $this->soapClient = ETCore::getClient();
@@ -126,7 +126,7 @@ abstract class AbstractETDataExtensionObject
   {
     foreach ($keys as $key)
     {
-      if (!in_array($key, $this->properties))
+      if (!in_array($key, $this->fields))
       {
         throw new Exception($key.' is not a valid field.');
       }
@@ -145,7 +145,7 @@ abstract class AbstractETDataExtensionObject
    */
   protected function makeSoapVar()
   {
-    foreach ($this->requiredProperties as $required)
+    foreach ($this->requiredFields as $required)
     {
       if ($this->data[$required] === null || $this->data[$required] === '')
       {
@@ -162,7 +162,7 @@ abstract class AbstractETDataExtensionObject
     
     foreach ($this->modifiedFiels as $fieldName)
     {
-      $deo->Properties[] = ETCore::newAPIProperty($fieldName, $this->fields[$fieldName]);
+      $deo->Properties[] = ETCore::newAPIProperty($fieldName, $this->data[$fieldName]);
     }
 
     return ETCore::toSoapVar($deo, 'DataExtensionObject');
@@ -248,6 +248,5 @@ abstract class AbstractETDataExtensionObject
     {
       throw new Exception(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
     }
-
   }
 }

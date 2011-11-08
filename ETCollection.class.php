@@ -52,7 +52,7 @@ class ETCollection
   {
     foreach ($this->data as $val)
     {
-      if ($val === $record)
+      if ($val === $obj)
       {
         return false;
       }
@@ -82,6 +82,32 @@ class ETCollection
       }
     
       $result = ETCore::upsert($data);
+      ETCore::evaluateSoapResult($result);
+      
+      return true;
+    }
+    catch (Exception $e)
+    {
+      throw new Exception(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
+    }
+  }
+  
+  /**
+   * Delete all records from this collection.
+   */
+  public function delete()
+  {
+    $data = array();
+    
+    try
+    {
+      foreach ($this->data as $rec)
+      {
+        $data[] = $rec->toSoapVar();
+      }
+    
+      $result = ETCore::delete($data);
+uDebug::echoVar('raw error', $result);
       ETCore::evaluateSoapResult($result);
       
       return true;

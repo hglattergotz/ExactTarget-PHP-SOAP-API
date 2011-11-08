@@ -67,7 +67,7 @@ abstract class AbstractETDataExtension
       }
       else
       {
-        $coll = new ETDataExtensionObjectCollection();
+        $coll = new ETCollection();
         
         foreach ($records as $record)
         {

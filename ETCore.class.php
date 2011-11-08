@@ -130,6 +130,29 @@ class ETCore
   }
   
   /**
+   * Delete objects
+   * 
+   * @param type $objects 
+   */
+  public static function delete($objects)
+  {
+    try
+    {
+      $soapClient = self::getClient();
+      
+      $request = new ExactTarget_DeleteRequest();
+      $request->Options = null;
+      $request->Objects = $objects;
+
+      return $soapClient->Delete($request);
+    }
+    catch (Exception $e)
+    {
+      throw new Exception(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
+    }
+  }
+  
+  /**
    * Utility method for parsing the SOAP response and throwing an exception with
    * a the appropriate error message.
    * 
@@ -141,9 +164,27 @@ class ETCore
     {
       $msg = '';
       
-      if (property_exists($result, 'Results') && property_exists($result->Results, 'StatusCode'))
+      if (property_exists($result, 'Results'))
       {
-        $msg = 'StatusCode='.$result->Results->StatusCode.'|StatusMessage='.$result->Results->StatusMessage;
+        if (is_array($result->Results))
+        {
+          $errors = array();
+          
+          foreach ($result->Results as $res)
+          {
+            $errors[] = 'StatusCode='.$res->StatusCode.'|ErrorMessage='.$res->ErrorMessage;
+          }
+          
+          $msg = print_r($errors, true);
+        }
+        else if ((is_object($result->Results)) && (property_exists($result->Results, 'StatusCode')))
+        {
+          $msg = 'StatusCode='.$result->Results->StatusCode.'|StatusMessage='.$result->Results->StatusMessage;
+        }
+        else
+        {
+          $msg = $result->OverallStatus;
+        }
       }
       else
       {
