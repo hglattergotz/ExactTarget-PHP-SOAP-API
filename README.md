@@ -1,4 +1,4 @@
-![ExactTarget](http://memberlandingpages.com/help/wiki_images/new_wiki/ExactTargetLogo.jpg)
+![ExactTarget](http://memberlandingpages.com/help/wiki_images/new_wiki/ExactTargetLogo.jpg) ![project status](http://stillmaintained.com/hglattergotz/ExactTarget-PHP-SOAP-API.png)
 
 ### PHP wrapper to ExactTarget SOAP API
 

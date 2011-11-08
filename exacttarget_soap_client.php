@@ -17,7 +17,6 @@ class ExactTargetSoapClient extends SoapClient {
 //        echo "</pre> ";
 //        print "\n \n";
 //file_put_contents('debug.xml', $objWSSE->saveXML());
-//uDebug::echoVar('soap version', $version);
     return parent::__doRequest($objWSSE->saveXML(), $location, $saction, $version, $one_way);
    }
 

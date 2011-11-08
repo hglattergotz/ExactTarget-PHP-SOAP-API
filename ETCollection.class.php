@@ -73,14 +73,20 @@ class ETCollection
   public function save()
   {
     $data = array();
+    $result = null;
+    
+    if (count($this->data) === 0)
+    {
+      return true;
+    }
     
     try
     {
       foreach ($this->data as $rec)
       {
-        $data[] = $rec->toSoapVar();
+        $data[] = $rec->toSoapVarForSave();
       }
-    
+
       $result = ETCore::upsert($data);
       ETCore::evaluateSoapResult($result);
       
@@ -88,7 +94,7 @@ class ETCollection
     }
     catch (Exception $e)
     {
-      throw new Exception(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
+      throw new Exception(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage().'|'.print_r($result, true));
     }
   }
   
@@ -99,15 +105,19 @@ class ETCollection
   {
     $data = array();
     
+    if (count($this->data) === 0)
+    {
+      return true;
+    }
+    
     try
     {
       foreach ($this->data as $rec)
       {
-        $data[] = $rec->toSoapVar();
+        $data[] = $rec->toSoapVarForDelete();
       }
     
       $result = ETCore::delete($data);
-uDebug::echoVar('raw error', $result);
       ETCore::evaluateSoapResult($result);
       
       return true;

@@ -1,12 +1,29 @@
 <?php
+/**
+ * Base class for an ExactTarget data extension. Provides methods that operate
+ * on a data extension (Table).
+ */
 abstract class AbstractETDataExtension
 {
+  /**
+   * @var ExactTargetSoapClient Instance of the ET SOAP client
+   */
   protected $soapClient;
   
+  /**
+   * @var string The customer key for this particular data extension
+   */
   protected $customerKey;
   
+  /**
+   * @var array The data extension schema (build from data that is fetched from
+   *            the dataExtensionObject.
+   */
   protected $schema;
   
+  /**
+   * @var AbstractETDataExtensionObject Related record class for this table.
+   */
   protected $extensionObjectClassName;
   
   public function __construct()
@@ -22,6 +39,16 @@ abstract class AbstractETDataExtension
     $this->soapClient = ETCore::getClient();
   }
   
+  /**
+   * Get all records from the table (data extension).
+   * 
+   * @param integer $hydrationMode ETCore::HYDRATE_ARRAY will return an array
+   *                               representation of the records in the table.
+   *                               ETCore::HYDRATE_RECORD will return an
+   *                               ETCollection that contains xxxObject objects.
+   * @return mixed ETCollection or Array, depending on hydration mode.
+   * @throws Exception 
+   */
   public function findAll($hydrationMode = ETCore::HYDRATE_ARRAY)
   {
     try
@@ -40,6 +67,11 @@ abstract class AbstractETDataExtension
       ETCore::evaluateSoapResult($result);
 
       $records = array();
+      
+      if (!property_exists($result, 'Results'))
+      {
+        $result->Results = array();
+      }
       
       if (!is_array($result->Results))
       {

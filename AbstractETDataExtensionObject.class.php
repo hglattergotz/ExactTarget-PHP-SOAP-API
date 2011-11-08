@@ -64,6 +64,7 @@ abstract class AbstractETDataExtensionObject
     foreach ($data as $k => $v)
     {
       $this->data[$k] = $v;
+      $this->modifiedFiels[] = $k;
     }
   }
   
@@ -78,15 +79,21 @@ abstract class AbstractETDataExtensionObject
   }
   
   /**
-   * Generate a soapVar object representation of this DataExtensionObject.
+   * Generate a soapVar object representation of this DataExtensionObject that
+   * can be used in save (upsert) operations.
    * This is primarely used for collections of DataExceptionObjects in order
    * to save multiple objects with a single soap call.
    * 
    * @return type 
    */
-  public function toSoapVar()
+  public function toSoapVarForSave()
   {
-    return $this->makeSoapVar();
+    return $this->makeSoapVarForSave();
+  }
+  
+  public function toSoapVarForDelete()
+  {
+    return $this->makeSoapVarForDelete();
   }
   
   /**
@@ -139,17 +146,17 @@ abstract class AbstractETDataExtensionObject
   }
   
   /**
-   * Helper method that creates a SoapVar object.
+   * Helper method that creates a SoapVar object for purposes of saving (upsert).
    * 
    * @return SoapVar 
    */
-  protected function makeSoapVar()
+  protected function makeSoapVarForSave()
   {
     foreach ($this->requiredFields as $required)
     {
       if ($this->data[$required] === null || $this->data[$required] === '')
       {
-        throw new Exception('Required field '.$required.' as not been set.');
+        throw new Exception('Required field '.$required.' has not been set.');
       }
     }
 
@@ -169,6 +176,33 @@ abstract class AbstractETDataExtensionObject
   }
   
   /**
+   * Helper method that creates a SoapVar object for purposes of deletion
+   * 
+   * @return type 
+   */
+  protected function makeSoapVarForDelete()
+  {
+    foreach ($this->primaryKeys as $pk)
+    {
+      if ($this->data[$pk] === null || $this->data[$pk] === '')
+      {
+        throw new Exception('Primary key '.$pk.' not set.');
+      }
+    }
+
+    $deo = new ExactTarget_DataExtensionObject();
+    $deo->CustomerKey = $this->customerKey;
+    $deo->Keys = array();
+
+    foreach ($this->primaryKeys as $pk)
+    {
+      $deo->Keys[] = ETCore::newAPIProperty($pk, $this->data[$pk]);
+    }
+
+    return ETCore::toSoapVar($deo, 'DataExtensionObject');
+  }
+  
+  /**
    * Save the record.
    * 
    * @return type 
@@ -182,7 +216,7 @@ abstract class AbstractETDataExtensionObject
         return false;
       }
       
-      $deoSo = $this->makeSoapVar();
+      $deoSo = $this->makeSoapVarForSave();
       
       $uo = new ExactTarget_UpdateOptions();
       $uo->SaveOptions = array();
@@ -217,26 +251,11 @@ abstract class AbstractETDataExtensionObject
   {
     try
     {
-      foreach ($this->primaryKeys as $pk)
-      {
-        if ($this->data[$pk] === null || $this->data[$pk] === '')
-        {
-          throw new Exception('Primary key '.$pk.' not set.');
-        }
-      }
-      
-      $deo = new ExactTarget_DataExtensionObject();
-      $deo->CustomerKey = $this->customerKey;
-      $deo->Keys = array();
-      
-      foreach ($this->primaryKeys as $pk)
-      {
-        $deo->Keys[] = ETCore::newAPIProperty($pk, $this->data[$pk]);
-      }
+      $deoSo = $this->makeSoapVarForDelete();
       
       $request = new ExactTarget_DeleteRequest();
       $request->Options = null;
-      $request->Objects = array(ETCore::toSoapVar($deo, 'DataExtensionObject'));
+      $request->Objects = array($deoSo);
 
       $result = $this->soapClient->Delete($request);
 
