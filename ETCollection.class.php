@@ -40,7 +40,7 @@ class ETCollection
   {
     $data = array();
 
-    foreach ($this as $record)
+    foreach ($this->data as $record)
     {
       $data[] = $record->toArray();
     }
