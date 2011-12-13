@@ -195,6 +195,11 @@ abstract class AbstractETSubscriber
     return $this->_setAttribute($name, $value);
   }
   
+  public function toSoapVarForSave()
+  {
+    return $this->makeSoapVar();
+  }
+
   protected function _setProperty($name, $value)
   {
     if (!array_key_exists($name, $this->properties))
