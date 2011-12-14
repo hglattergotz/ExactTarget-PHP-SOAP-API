@@ -13,6 +13,17 @@ abstract class AbstractETSubscriberList
   }
 
   /**
+   *
+   * @param mixed $filter          An ExactTarget_SimpleFilterPart object or
+   *                               an ExactTarget_ComplexFilterPart object.
+   * @param integer $hydrationMode 
+   */
+  public function find($filter, $hydrationMode = ETCore::HYDRATE_ARRAY)
+  {
+    return $this->_find($filter, $hydrationMode, false);
+  }
+  
+  /**
    * Return Subscriber records that match the search criteria.
    * 
    * @param string $property      The name of the property to match
@@ -23,26 +34,40 @@ abstract class AbstractETSubscriberList
    */
   public function findByProperty($property, $value, $hydrationMode = ETCore::HYDRATE_ARRAY)
   {
-    return $this->_findByProperty($property, $value, $hydrationMode, false);
+    $sfp = $this->newSimpleFilterPart($property, $value);
+
+    return $this->_find($sfp, $hydrationMode, false, false);
   }
 
   public function findOneByProperty($property, $value, $hydrationMode = ETCore::HYDRATE_ARRAY)
   {
-    return $this->_findByProperty($property, $value, $hydrationMode, true);
+    $sfp = $this->newSimpleFilterPart($property, $value);
+
+    return $this->_find($sfp, $hydrationMode, false, true);
   }
   
-  protected function _findByProperty($property, $value, $hydrationMode = ETCore::HYDRATE_ARRAY, $one = false)
+  public function _find($filter, $hydrationMode = ETCore::HYDRATE_ARRAY, $one = false)
   {
+    $typeName = null;
+    
+    if ($filter instanceof ExactTarget_SimpleFilterPart)
+    {
+      $typeName = 'SimpleFilterPart';
+    }
+    else if ($filter instanceof ExactTarget_ComplexFilterPart)
+    {
+      $typeName = 'ComplexFilterPart';
+    }
+    else
+    {
+      throw new Exception('First parameter must be of type ExactTarget_SimpleFilterPart or ExactTarget_ComplexFilterPart.');
+    }
+    
     $rr = new ExactTarget_RetrieveRequest();
     $rr->ObjectType = "Subscriber";
     $rr->Properties = $this->retrievableProperties();
     
-    $sfp = new ExactTarget_SimpleFilterPart();
-    $sfp->Value = array($value);
-    $sfp->SimpleOperator = ExactTarget_SimpleOperators::equals;
-    $sfp->Property = $property;
-
-    $rr->Filter = ETCore::toSoapVar($sfp, 'SimpleFilterPart');
+    $rr->Filter = ETCore::toSoapVar($filter, $typeName);
     $rr->Options = null;
 
     $rrm = new ExactTarget_RetrieveRequestMsg();
@@ -54,7 +79,7 @@ abstract class AbstractETSubscriberList
 
     return $this->hydrate($result, $hydrationMode, $one);
   }
-  
+
   /**
    * Subset of properties that are retrievable with a Retrieve() request.
    * This was determined by trial and error.
@@ -151,5 +176,15 @@ abstract class AbstractETSubscriberList
     }
     
     return $final;
+  }
+  
+  protected function newSimpleFilterPart($property, $value, $operator = ExactTarget_SimpleOperators::equals)
+  {
+    $sfp = new ExactTarget_SimpleFilterPart();
+    $sfp->Value = array($value);
+    $sfp->SimpleOperator = $operator;
+    $sfp->Property = $property;
+    
+    return $sfp;
   }
 }
