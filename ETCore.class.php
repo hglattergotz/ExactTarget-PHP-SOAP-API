@@ -160,38 +160,44 @@ class ETCore
    */
   public static function evaluateSoapResult($result)
   {
-    if ($result->OverallStatus != 'OK')
+    switch ($result->OverallStatus)
     {
-      $msg = '';
-      
-      if (property_exists($result, 'Results'))
-      {
-        if (is_array($result->Results))
+      case 'OK':
+        break;
+      case 'MoreDataAvailable':
+        break;
+      default:
+        $msg = '';
+
+        if (property_exists($result, 'Results'))
         {
-          $errors = array();
-          
-          foreach ($result->Results as $res)
+          if (is_array($result->Results))
           {
-            $errors[] = 'StatusCode='.$res->StatusCode.'|ErrorMessage='.$res->ErrorMessage;
+            $errors = array();
+
+            foreach ($result->Results as $res)
+            {
+              $errors[] = 'StatusCode='.$res->StatusCode.'|ErrorMessage='.$res->ErrorMessage;
+            }
+
+            $msg = print_r($errors, true);
           }
-          
-          $msg = print_r($errors, true);
-        }
-        else if ((is_object($result->Results)) && (property_exists($result->Results, 'StatusCode')))
-        {
-          $msg = 'StatusCode='.$result->Results->StatusCode.'|StatusMessage='.$result->Results->StatusMessage;
+          else if ((is_object($result->Results)) && (property_exists($result->Results, 'StatusCode')))
+          {
+            $msg = 'StatusCode='.$result->Results->StatusCode.'|StatusMessage='.$result->Results->StatusMessage;
+          }
+          else
+          {
+            $msg = $result->OverallStatus;
+          }
         }
         else
         {
           $msg = $result->OverallStatus;
         }
-      }
-      else
-      {
-        $msg = $result->OverallStatus;
-      }
-      
-      throw new Exception($msg);
+
+        throw new Exception($msg);
+        break;
     }
   }
 

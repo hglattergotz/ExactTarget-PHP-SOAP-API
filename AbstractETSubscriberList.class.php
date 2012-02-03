@@ -46,7 +46,7 @@ abstract class AbstractETSubscriberList
     return $this->_find($sfp, $hydrationMode, false, true);
   }
   
-  public function _find($filter, $hydrationMode = ETCore::HYDRATE_ARRAY, $one = false)
+  protected function _find($filter, $hydrationMode = ETCore::HYDRATE_ARRAY, $one = false)
   {
     $typeName = null;
     
