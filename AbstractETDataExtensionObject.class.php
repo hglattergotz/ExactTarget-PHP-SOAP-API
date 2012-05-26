@@ -13,12 +13,12 @@ abstract class AbstractETDataExtensionObject
   {
     $this->configure();
     $this->data = array();
-    
+
     foreach ($this->fields as $field)
     {
       $this->data[$field] = null;
     }
-    
+
     $this->soapClient = ETCore::getClient();
   }
 
@@ -27,17 +27,17 @@ abstract class AbstractETDataExtensionObject
    * configuring the object for a specific data extension.
    */
   abstract protected function configure();
-  
+
   public function __call($name, $args)
   {
     $prefix = substr($name, 0, 3);
     $fieldName = substr($name, 3);
-    
+
     if (!in_array($fieldName, $this->fields))
     {
       throw new Exception('Invalid field '.$fieldName);
     }
-        
+
     switch ($prefix)
     {
       case 'get':
@@ -54,53 +54,53 @@ abstract class AbstractETDataExtensionObject
 
   /**
    * Populate the object from a nassociative array.
-   * 
-   * @param type $data 
+   *
+   * @param type $data
    */
   public function fromArray($data)
   {
     $this->validateSchema(array_keys($data));
-    
+
     foreach ($data as $k => $v)
     {
       $this->data[$k] = $v;
       $this->modifiedFiels[] = $k;
     }
   }
-  
+
   /**
    * Return the data representation as a nassociative array.
-   * 
-   * @return type 
+   *
+   * @return type
    */
   public function toArray()
   {
     return $this->data;
   }
-  
+
   /**
    * Generate a soapVar object representation of this DataExtensionObject that
    * can be used in save (upsert) operations.
    * This is primarely used for collections of DataExceptionObjects in order
    * to save multiple objects with a single soap call.
-   * 
-   * @return type 
+   *
+   * @return type
    */
   public function toSoapVarForSave()
   {
     return $this->makeSoapVarForSave();
   }
-  
+
   public function toSoapVarForDelete()
   {
     return $this->makeSoapVarForDelete();
   }
-  
+
   /**
    * Return the schema of this extension. Primarely used for constructing the
    * companion DataExtension object.
-   * 
-   * @return type 
+   *
+   * @return type
    */
   public function getSchema()
   {
@@ -111,11 +111,11 @@ abstract class AbstractETDataExtensionObject
           'customerKey'    => $this->customerKey
     );
   }
-  
+
   /**
    * Process the soap result and throw an exception if something went wrong
-   * 
-   * @param type $result 
+   *
+   * @param type $result
    */
   protected function evaluateResult($result)
   {
@@ -126,8 +126,8 @@ abstract class AbstractETDataExtensionObject
    * Validate the keys passed to the method. $keys can be a subset of the
    * objects schema but cannot contain any values that are not part of the
    * objects schema (as defined in the configure() method in the derived class.
-   * 
-   * @param type $keys 
+   *
+   * @param type $keys
    */
   protected function validateSchema($keys)
   {
@@ -144,11 +144,11 @@ abstract class AbstractETDataExtensionObject
   {
     return in_array($fieldName, $this->primaryKeys);
   }
-  
+
   /**
    * Helper method that creates a SoapVar object for purposes of saving (upsert).
-   * 
-   * @return SoapVar 
+   *
+   * @return SoapVar
    */
   protected function makeSoapVarForSave()
   {
@@ -166,7 +166,7 @@ abstract class AbstractETDataExtensionObject
     $deo->Keys = array();
 
     $this->modifiedFiels = array_unique(array_merge($this->modifiedFiels, $this->primaryKeys));
-    
+
     foreach ($this->modifiedFiels as $fieldName)
     {
       $deo->Properties[] = ETCore::newAPIProperty($fieldName, $this->data[$fieldName]);
@@ -174,11 +174,11 @@ abstract class AbstractETDataExtensionObject
 
     return ETCore::toSoapVar($deo, 'DataExtensionObject');
   }
-  
+
   /**
    * Helper method that creates a SoapVar object for purposes of deletion
-   * 
-   * @return type 
+   *
+   * @return type
    */
   protected function makeSoapVarForDelete()
   {
@@ -201,40 +201,40 @@ abstract class AbstractETDataExtensionObject
 
     return ETCore::toSoapVar($deo, 'DataExtensionObject');
   }
-  
+
   /**
    * Save the record.
-   * 
-   * @return type 
+   *
+   * @return type
    */
   public function save()
   {
     try
     {
-      if (count($this->modifiedFiels) > 0)
+      if (count($this->modifiedFiels) == 0)
       {
         return false;
       }
-      
+
       $deoSo = $this->makeSoapVarForSave();
-      
+
       $uo = new ExactTarget_UpdateOptions();
       $uo->SaveOptions = array();
-      
+
       $so = new ExactTarget_SaveOption();
       $so->PropertyName = 'DataExtensionObject';
       $so->SaveAction = ExactTarget_SaveAction::UpdateAdd;
-      
+
       $uo->SaveOptions[] = $so;
       $uoSo = ETCore::toSoapVar($uo, 'UpdateOptions');
-      
+
       $request = new ExactTarget_UpdateRequest();
       $request->Options = $uoSo;
       $request->Objects = array($deoSo);
       $result = $this->soapClient->Update($request);
-      
+
       $this->evaluateResult($result);
-      
+
       return true;
     }
     catch (Exception $e)
@@ -242,17 +242,17 @@ abstract class AbstractETDataExtensionObject
       throw new Exception(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
     }
   }
-  
+
   /**
    * Delete the record specified by the primary key(s)
-   * 
+   *
    */
   public function delete()
   {
     try
     {
       $deoSo = $this->makeSoapVarForDelete();
-      
+
       $request = new ExactTarget_DeleteRequest();
       $request->Options = null;
       $request->Objects = array($deoSo);
@@ -260,7 +260,7 @@ abstract class AbstractETDataExtensionObject
       $result = $this->soapClient->Delete($request);
 
       $this->evaluateResult($result);
-      
+
       return true;
     }
     catch (Exception $e)
