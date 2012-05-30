@@ -1,4 +1,10 @@
 <?php
+/**
+ * ETCollection
+ *
+ * @package ExactTargetAPI
+ * @author  Henning Glatter-Gotz
+ */
 class ETCollection
 {
   protected $data = array();
@@ -8,8 +14,8 @@ class ETCollection
 
   /**
    * Process the soap result and throw an exception if something went wrong
-   * 
-   * @param type $result 
+   *
+   * @param type $result
    */
   protected function evaluateResult($result)
   {
@@ -70,16 +76,24 @@ class ETCollection
     return new ArrayIterator($data);
   }
 
+  /**
+   * save
+   *
+   * Save the collection to the backend (SOAP API)
+   *
+   * @access public
+   * @return void
+   */
   public function save()
   {
     $data = array();
     $result = null;
-    
+
     if (count($this->data) === 0)
     {
       return true;
     }
-    
+
     try
     {
       foreach ($this->data as $rec)
@@ -89,7 +103,7 @@ class ETCollection
 
       $result = ETCore::upsert($data);
       ETCore::evaluateSoapResult($result);
-      
+
       return true;
     }
     catch (Exception $e)
@@ -97,29 +111,29 @@ class ETCollection
       throw new Exception(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage().'|'.print_r($result, true));
     }
   }
-  
+
   /**
    * Delete all records from this collection.
    */
   public function delete()
   {
     $data = array();
-    
+
     if (count($this->data) === 0)
     {
       return true;
     }
-    
+
     try
     {
       foreach ($this->data as $rec)
       {
         $data[] = $rec->toSoapVarForDelete();
       }
-    
+
       $result = ETCore::delete($data);
       ETCore::evaluateSoapResult($result);
-      
+
       return true;
     }
     catch (Exception $e)

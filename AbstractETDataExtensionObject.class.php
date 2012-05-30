@@ -1,22 +1,73 @@
 <?php
+/**
+ * AbstractETDataExtensionObject
+ *
+ * @abstract
+ * @package ExactTargetAPI
+ * @author  Henning Glatter-Gotz
+ */
 abstract class AbstractETDataExtensionObject
 {
-  protected $fields;
+  // Supported Data Extension data types
+  const TYPE_TEXT = 1;
+  const TYPE_NUMBER = 2;
+  const TYPE_EMAIL = 3;
+  const TYPE_PHONE = 4;
+  const TYPE_DATE = 5;
+  const TYPE_BOOLEAN = 6;
+
+  /**
+   * Array of field names that have been modified
+   */
   protected $modifiedFiels = array();
-  protected $primaryKeys;
-  protected $requiredFields;
+
+  /**
+   * The actual data of the object
+   */
   protected $data;
+
+  /**
+   * The customer key for the data extension
+   */
   protected $customerKey;
+
+  /**
+   * The soapClient object used for accessing the ET SOAP API
+   */
   protected $soapClient;
 
+  /**
+   * The schema for the data extension as an array of all fields with some meta
+   *
+   * $schema = array(
+   *   'fieldname' => array(
+   *     'is_required' => true/false,
+   *     'is_primary'  => true/false,
+   *     'type'        => self::TYPE_*
+   *   ),
+   *   :
+   *   :
+   * );
+   *
+   * This is defined in the configure() method of the classes that extend this
+   * abstract base class.
+   */
+  protected $schema;
+
+  /**
+   * __construct
+   *
+   * @access public
+   * @return void
+   */
   public function __construct()
   {
     $this->configure();
     $this->data = array();
 
-    foreach ($this->fields as $field)
+    foreach ($this->schema as $key => $value)
     {
-      $this->data[$field] = null;
+      $this->data[$key] = null;
     }
 
     $this->soapClient = ETCore::getClient();
@@ -28,12 +79,22 @@ abstract class AbstractETDataExtensionObject
    */
   abstract protected function configure();
 
+  /**
+   * __call
+   *
+   * Magic method for get and set
+   *
+   * @param string $name The field name
+   * @param mixed $args
+   * @access public
+   * @return void
+   */
   public function __call($name, $args)
   {
     $prefix = substr($name, 0, 3);
     $fieldName = substr($name, 3);
 
-    if (!in_array($fieldName, $this->fields))
+    if (!array_key_exists($fieldName, $this->schema))
     {
       throw new Exception('Invalid field '.$fieldName);
     }
@@ -53,9 +114,13 @@ abstract class AbstractETDataExtensionObject
   }
 
   /**
-   * Populate the object from a nassociative array.
+   * fromArray
    *
-   * @param type $data
+   * Populate the object from a nassociative array
+   *
+   * @param array $data The array to load the objec from
+   * @access public
+   * @return void
    */
   public function fromArray($data)
   {
@@ -105,9 +170,9 @@ abstract class AbstractETDataExtensionObject
   public function getSchema()
   {
     return array(
-          'fields'         => $this->fields,
-          'primaryKeys'    => $this->primaryKeys,
-          'requiredFields' => $this->requiredFields,
+          'fields'         => array_keys($this->schema),
+          'primaryKeys'    => $this->getPrimaryKeys(),
+          'requiredFields' => $this->getRequiredFields(),
           'customerKey'    => $this->customerKey
     );
   }
@@ -123,40 +188,140 @@ abstract class AbstractETDataExtensionObject
   }
 
   /**
+   * validateSchema
+   *
    * Validate the keys passed to the method. $keys can be a subset of the
    * objects schema but cannot contain any values that are not part of the
    * objects schema (as defined in the configure() method in the derived class.
    *
-   * @param type $keys
+   * @param array $keys The field names (keys) of an array to be validated
+   * @access protected
+   * @return void
    */
   protected function validateSchema($keys)
   {
     foreach ($keys as $key)
     {
-      if (!in_array($key, $this->fields))
+      if (!array_key_exists($key, $this->schema))
       {
         throw new Exception($key.' is not a valid field.');
       }
     }
   }
 
-  protected function isPrimary($fieldName)
+  /**
+   * isFieldPrimary
+   *
+   * Return true if the field is a primary key
+   *
+   * @param string $fieldName The field name as defined in the data extension
+   * @access public
+   * @return void
+   */
+  public function isFieldPrimary($fieldName)
   {
-    return in_array($fieldName, $this->primaryKeys);
+    $this->validateSchema(array($fieldName));
+
+    return $this->schema[$fieldName]['is_primary'];
   }
 
   /**
-   * Helper method that creates a SoapVar object for purposes of saving (upsert).
+   * isFieldRequired
    *
-   * @return SoapVar
+   * Return true if the fieldName is valid and is required
+   *
+   * @param string $fieldName The field name as defined in the data extension
+   * @access public
+   * @return void
+   */
+  public function isFieldRequired($fieldName)
+  {
+    $this->validateSchema(array($fieldName));
+
+    return $this->schema[$fieldName]['is_required'];
+  }
+
+  /**
+   * getFieldType
+   *
+   * Return the field type, which is one of self::TYPE_*
+   *
+   * @param string $fieldName The field name as defined in the data extension
+   * @access public
+   * @return void
+   */
+  public function getFieldType($fieldName)
+  {
+    $this->validateSchema(array($fieldName));
+
+    return $this->schema[$fieldName]['type'];
+  }
+
+  /**
+   * getPrimaryKeys
+   *
+   * Return an array of primary key field names
+   *
+   * @access public
+   * @return array
+   */
+  public function getPrimaryKeys()
+  {
+    $keys = array();
+
+    foreach ($this->schema as $key => $value)
+    {
+      if ($value['is_primary'])
+      {
+        $keys[] = $key;
+      }
+    }
+
+    return $keys;
+  }
+
+  /**
+   * getRequiredFields
+   *
+   * Return an array of required field names
+   *
+   * @access public
+   * @return array
+   */
+  public function getRequiredFields()
+  {
+    $keys = array();
+
+    foreach ($this->schema as $key => $value)
+    {
+      if ($value['is_required'])
+      {
+        $keys[] = $key;
+      }
+    }
+
+    return $keys;
+  }
+
+  /**
+   * makeSoapVarForSave
+   *
+   * Helper method that creates a SoapVar object for purposes of saving
+   * (upsert).
+   *
+   * @access protected
+   * @return void
    */
   protected function makeSoapVarForSave()
   {
-    foreach ($this->requiredFields as $required)
+    $nullValues = array(null, '');
+    $requiredFields = $this->getRequiredFields();
+
+    foreach ($requiredFields as $required)
     {
-      if ($this->data[$required] === null || $this->data[$required] === '')
+      if (in_array($this->data[$required], $nullValues))
       {
-        throw new Exception('Required field '.$required.' has not been set.');
+        throw new Exception('Required field '.$required.' not set.');
       }
     }
 
@@ -165,26 +330,55 @@ abstract class AbstractETDataExtensionObject
     $deo->Properties = array();
     $deo->Keys = array();
 
-    $this->modifiedFiels = array_unique(array_merge($this->modifiedFiels, $this->primaryKeys));
+    $this->modifiedFiels = array_unique(array_merge($this->modifiedFiels, $this->getPrimaryKeys()));
 
     foreach ($this->modifiedFiels as $fieldName)
     {
-      $deo->Properties[] = ETCore::newAPIProperty($fieldName, $this->data[$fieldName]);
+      if (in_array($this->data[$fieldName], $nullValues))
+      {
+        $type = $this->getFieldType($fieldName);
+
+        switch ($type)
+        {
+        case self::TYPE_TEXT:
+          $deo->Properties[] = ETCore::newAPIProperty($fieldName, null);
+          break;
+        case self::TYPE_NUMBER:
+        case self::TYPE_EMAIL:
+        case self::TYPE_PHONE:
+        case self::TYPE_DATE:
+        case self::TYPE_BOOLEAN:
+          // At this point cannot be set to null, just drop it.
+          break;
+        default:
+          throw new Exception('Invalid type');
+        }
+      }
+      else
+      {
+        $deo->Properties[] = ETCore::newAPIProperty($fieldName, $this->data[$fieldName]);
+      }
     }
 
     return ETCore::toSoapVar($deo, 'DataExtensionObject');
   }
 
   /**
+   * makeSoapVarForDelete
+   *
    * Helper method that creates a SoapVar object for purposes of deletion
    *
-   * @return type
+   * @access protected
+   * @return void
    */
   protected function makeSoapVarForDelete()
   {
-    foreach ($this->primaryKeys as $pk)
+    $nullValues = array(null, '');
+    $pks = $this->getPrimaryKey();
+
+    foreach ($pks as $pk)
     {
-      if ($this->data[$pk] === null || $this->data[$pk] === '')
+      if (in_array($this->data[$pk], $nullValues))
       {
         throw new Exception('Primary key '.$pk.' not set.');
       }
@@ -194,7 +388,7 @@ abstract class AbstractETDataExtensionObject
     $deo->CustomerKey = $this->customerKey;
     $deo->Keys = array();
 
-    foreach ($this->primaryKeys as $pk)
+    foreach ($pks as $pk)
     {
       $deo->Keys[] = ETCore::newAPIProperty($pk, $this->data[$pk]);
     }
