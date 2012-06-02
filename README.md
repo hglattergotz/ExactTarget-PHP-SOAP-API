@@ -1,8 +1,8 @@
 ![ExactTarget](http://memberlandingpages.com/help/wiki_images/new_wiki/ExactTargetLogo.jpg) ![project status](http://stillmaintained.com/hglattergotz/ExactTarget-PHP-SOAP-API.png)
 
-### PHP wrapper to ExactTarget SOAP API
+### PHP wrapper for ExactTarget SOAP API
 
-This is a php library for accessing a subset of ExactTarget's SOAP API. It provides *synchronous* CRUD operations on **Data Extensions** and **Subscriber Lists** by exposing a Doctrine like API (Record, Table, Collection).
+This is a php library for accessing a subset of ExactTarget's SOAP API. It provides *synchronous* CRUD operations on **Data Extensions** and **Subscriber Lists** by exposing a Doctrine-like API (Record, Table, Collection).
 The ExactTarget API documentation can be found [here](http://docs.code.exacttarget.com/).
 
 - - -
@@ -50,13 +50,23 @@ class PersonDataExtensionObject extends AbstractETDataExtensionObject
     protected function configure()
     {
         $this->customerKey = 'my customer key for this DE';
-        $this->primaryKeys = array('id');
-        $this->requiredFields = array('id', 'email');
-        $this->fields = array(
-            'id',
-            'firstname',
-            'lastname',
-            'email'
+        $this->schema = array(
+            'id' => array(
+                'is_primary'  => true,
+                'is_required' => true,
+                'type'        => self::TYPE_NUMBER),
+            'firstname' => array(
+                'is_primary'  => false,
+                'is_required' => false,
+                'type'        => self::TYPE_TEXT),
+            'lastname' => array(
+                'is_primary'  => false,
+                'is_required' => false,
+                'type'        => self::TYPE_NUMBER),
+            'email' => array(
+                'is_primary'  => false,
+                'is_required' => true,
+                'type'        => self::TYPE_NUMBER)
         );
     }
 }
