@@ -1,4 +1,4 @@
-![ExactTarget](http://memberlandingpages.com/help/wiki_images/new_wiki/ExactTargetLogo.jpg) ![project status](http://stillmaintained.com/hglattergotz/ExactTarget-PHP-SOAP-API.png)
+![ExactTarget](http://memberlandingpages.com/help/wiki_images/new_wiki/ExactTargetLogo.jpg)
 
 ### PHP wrapper for ExactTarget SOAP API
 
@@ -33,18 +33,18 @@ The names are pretty self explanatory and if you are familiar with Doctrine this
 
 To interact with a Data Extension with the following schema you simply extend the `AbstractETDataExtensionObject` and `AbstractETDataExtension` classes.
 
-**Schema**
+#### Schema
 
-~~~
+```php
 id (primary key)
 firstname
 lastname
 email
-~~~
+```
 
-**Record**
+#### Record
 
-~~~
+```php
 class PersonDataExtensionObject extends AbstractETDataExtensionObject
 {
     protected function configure()
@@ -70,20 +70,20 @@ class PersonDataExtensionObject extends AbstractETDataExtensionObject
         );
     }
 }
-~~~
+```
 
-**Table**
+#### Table
 
-~~~
+```php
 class PersonDataExtension extends AbstractETDataExtension
 {}
-~~~
+```
 
 *Important:* The two related classes must have the same name, but the Record class has `Object` appended to it.
 
-*Fetch a record from the data extension and modify it.*
+##### Fetch a record from the data extension and modify it.
 
-~~~
+```php
 ETCore::initialize('myusername', 'mypassword');
     
 $personDE = new PersonDataExtension();
@@ -91,13 +91,13 @@ $allPeople = $personDE->findAll(ETCore::HYDRATE_RECORD);
 $person = $allPeople->getFirst();
 $person->setfirstname('Joe');
 $person->save();
-~~~
+```
 
-*Create a new record*
+##### Create a new record
 
-~~~
+```php
 ETCore::initialize('myusername', 'mypassword');
-    
+
 $personData = array(
     'id' => 123,
     'firstname' => 'Joe',
@@ -107,7 +107,7 @@ $personData = array(
 $person = new PersonDataExtensionObject();
 $person->fromArray($personData);
 $person->save();
-~~~
+```
 
 - - -
 
