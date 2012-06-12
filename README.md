@@ -2,7 +2,7 @@
 
 ### PHP wrapper for ExactTarget SOAP API
 
-This is a php library for accessing a subset of ExactTarget's SOAP API. It provides *synchronous* CRUD operations on **Data Extensions** and **Subscriber Lists** by exposing a Doctrine-like API (Record, Table, Collection).
+This is a php library for accessing a **subset** of ExactTarget's SOAP API. It provides *synchronous* CRUD operations on **Data Extensions** and **Subscriber Lists** by exposing a Doctrine-like API (Record, Table, Collection).
 The ExactTarget API documentation can be found [here](http://docs.code.exacttarget.com/).
 
 - - -
@@ -16,7 +16,7 @@ The ExactTarget API documentation can be found [here](http://docs.code.exacttarg
 
 ### <a name="requirements">Requirements</a>
 
-* See [ExactTarget PHP getting started guide](http://wiki.memberlandingpages.com/030_Developer_Documentation/020_Web_Service_Guide/Getting_Started_Developers_and_the_ExactTarget_API/Connecting_to_the_API_using_PHP).
+* See [ExactTarget PHP getting started guide](http://docs.code.exacttarget.com/020_Web_Service_Guide/Getting_Started_Developers_and_the_ExactTarget_API).
 * If you are not using an auto-loader you will have to add require() statements.
 
 - - -
@@ -36,6 +36,7 @@ To interact with a Data Extension with the following schema you simply extend th
 #### Schema
 
 ```php
+<?php
 id (primary key)
 firstname
 lastname
@@ -45,6 +46,7 @@ email
 #### Record
 
 ```php
+<?php
 class PersonDataExtensionObject extends AbstractETDataExtensionObject
 {
     protected function configure()
@@ -72,9 +74,10 @@ class PersonDataExtensionObject extends AbstractETDataExtensionObject
 }
 ```
 
-#### Table
+#### Table (Data Extension)
 
 ```php
+<?php
 class PersonDataExtension extends AbstractETDataExtension
 {}
 ```
@@ -84,8 +87,9 @@ class PersonDataExtension extends AbstractETDataExtension
 ##### Fetch a record from the data extension and modify it.
 
 ```php
+<?php
 ETCore::initialize('myusername', 'mypassword');
-    
+
 $personDE = new PersonDataExtension();
 $allPeople = $personDE->findAll(ETCore::HYDRATE_RECORD);
 $person = $allPeople->getFirst();
@@ -96,6 +100,7 @@ $person->save();
 ##### Create a new record
 
 ```php
+<?php
 ETCore::initialize('myusername', 'mypassword');
 
 $personData = array(
