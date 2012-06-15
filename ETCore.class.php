@@ -297,6 +297,38 @@ class ETCore
   }
 
   /**
+   * getObjectDefinition
+   *
+   * Retrieve the definition of an object from the ExactTarget SOAP service.
+   * This can be used to get detailed information on each property of an
+   * object, such as the value of IsRetrievable.
+   *
+   * @param string $objectName
+   * @static
+   * @access public
+   * @return array
+   */
+  public static function getObjectDefinition($objectName)
+  {
+    try
+    {
+      $client = self::getClient();
+      $request = new ExactTarget_ObjectDefinitionRequest();
+      $request->ObjectType= $objectName;
+      $defRqstMsg = new ExactTarget_DefinitionRequestMsg();
+      $defRqstMsg->DescribeRequests[] =  self::toSoapVar($request, 'ObjectDefinitionRequest');
+
+      $status = $client->Describe($defRqstMsg);
+
+      return $status->ObjectDefinition;
+    }
+    catch (Exception $e)
+    {
+      throw $e;
+    }
+  }
+
+  /**
    * Utility method that reduces code volume by constructing an APIProperty
    * object.
    *
