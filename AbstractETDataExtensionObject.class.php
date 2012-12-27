@@ -374,7 +374,7 @@ abstract class AbstractETDataExtensionObject
   protected function makeSoapVarForDelete()
   {
     $nullValues = array(null, '');
-    $pks = $this->getPrimaryKey();
+    $pks = $this->getPrimaryKeys();
 
     foreach ($pks as $pk)
     {
