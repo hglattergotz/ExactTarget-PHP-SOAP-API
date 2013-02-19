@@ -66,7 +66,7 @@ class ETCore
   {
     if (self::$instance === null)
     {
-      throw new Exception('Exact Target environment is not initialized!');
+      throw new ETException('Exact Target environment is not initialized!');
     }
 
     $client = new ExactTargetSoapClient(self::$instance->wsdl, array('trace' => 0, 'soap_version' => SOAP_1_1));
@@ -110,7 +110,7 @@ class ETCore
     }
     catch (Exception $e)
     {
-      throw new Exception(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
+      throw new ETException(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
     }
   }
 
@@ -156,7 +156,7 @@ class ETCore
     }
     catch (Exception $e)
     {
-      throw new Exception(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
+      throw new ETException(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
     }
   }
 
@@ -204,7 +204,7 @@ class ETCore
           $msg = $result->OverallStatus;
         }
 
-        throw new Exception($msg);
+        throw new ETException($msg);
         break;
     }
   }

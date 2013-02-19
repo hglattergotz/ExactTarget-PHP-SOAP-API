@@ -96,7 +96,7 @@ abstract class AbstractETDataExtensionObject
 
     if (!array_key_exists($fieldName, $this->schema))
     {
-      throw new Exception('Invalid field '.$fieldName);
+      throw new ETException('Invalid field '.$fieldName);
     }
 
     switch ($prefix)
@@ -109,7 +109,7 @@ abstract class AbstractETDataExtensionObject
         $this->modifiedFiels[] = $fieldName;
         break;
       default:
-        throw new Exception('Invalid method prefix '.$prefix);
+        throw new ETException('Invalid method prefix '.$prefix);
     }
   }
 
@@ -204,7 +204,7 @@ abstract class AbstractETDataExtensionObject
     {
       if (!array_key_exists($key, $this->schema))
       {
-        throw new Exception($key.' is not a valid field.');
+        throw new ETException($key.' is not a valid field.');
       }
     }
   }
@@ -321,7 +321,7 @@ abstract class AbstractETDataExtensionObject
     {
       if (in_array($this->data[$required], $nullValues))
       {
-        throw new Exception('Required field '.$required.' not set.');
+        throw new ETException('Required field '.$required.' not set.');
       }
     }
 
@@ -380,7 +380,7 @@ abstract class AbstractETDataExtensionObject
     {
       if (in_array($this->data[$pk], $nullValues))
       {
-        throw new Exception('Primary key '.$pk.' not set.');
+        throw new ETException('Primary key '.$pk.' not set.');
       }
     }
 
@@ -433,7 +433,7 @@ abstract class AbstractETDataExtensionObject
     }
     catch (Exception $e)
     {
-      throw new Exception(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
+      throw new ETException(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
     }
   }
 
@@ -459,7 +459,7 @@ abstract class AbstractETDataExtensionObject
     }
     catch (Exception $e)
     {
-      throw new Exception(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
+      throw new ETException(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
     }
   }
 }

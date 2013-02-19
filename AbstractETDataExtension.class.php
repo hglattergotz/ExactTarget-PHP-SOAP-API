@@ -81,7 +81,7 @@ abstract class AbstractETDataExtension
       }
       else
       {
-        throw new Exception('First parameter must be of type ExactTarget_SimpleFilterPart or ExactTarget_ComplexFilterPart.');
+        throw new ETException('First parameter must be of type ExactTarget_SimpleFilterPart or ExactTarget_ComplexFilterPart.');
       }
 
       $res = null;
@@ -147,7 +147,7 @@ abstract class AbstractETDataExtension
     }
     catch (Exception $e)
     {
-      throw new Exception(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
+      throw new ETException(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
     }
   }
 
@@ -228,7 +228,7 @@ abstract class AbstractETDataExtension
     }
     catch (Exception $e)
     {
-      throw new Exception(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
+      throw new ETException(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
     }
   }
 }

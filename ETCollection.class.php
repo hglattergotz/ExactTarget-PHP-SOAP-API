@@ -108,7 +108,7 @@ class ETCollection
     }
     catch (Exception $e)
     {
-      throw new Exception(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage().'|'.print_r($result, true));
+      throw new ETException(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage().'|'.print_r($result, true));
     }
   }
 
@@ -138,7 +138,7 @@ class ETCollection
     }
     catch (Exception $e)
     {
-      throw new Exception(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
+      throw new ETException(__METHOD__ . ':' . __LINE__ . '|' . $e->getMessage());
     }
   }
 }
