@@ -1,87 +1,197 @@
-<?php 
+<?php
 //require('soap-wsse.php');
 
 class ExactTargetSoapClient extends SoapClient {
-	public $username = NULL;
-	public $password = NULL;
+  public $username = NULL;
+  public $password = NULL;
 
-	function __doRequest($request, $location, $saction, $version, $one_way = null) {
-		$doc = new DOMDocument();
-		$doc->loadXML($request);
+  function __doRequest($request, $location, $saction, $version, $one_way = null) {
+    $doc = new DOMDocument();
+    $doc->loadXML($request);
 
-		$objWSSE = new WSSESoap($doc);
+    $objWSSE = new WSSESoap($doc);
+    $objWSSE->addUserToken($this->username, $this->password, FALSE);
+    $xml = $objWSSE->saveXML();
 
-		$objWSSE->addUserToken($this->username, $this->password, FALSE);
-//        echo "<pre> ";
-//        echo $objWSSE->saveXML();
-//        echo "</pre> ";
-//        print "\n \n";
-//file_put_contents('debug.xml', $objWSSE->saveXML());
-    return parent::__doRequest($objWSSE->saveXML(), $location, $saction, $version, $one_way);
+    $result = parent::__doRequest($xml, $location, $saction, $version, $one_way);
+    return $result;
    }
-
 }
 
 class ExactTarget_APIFault {
-  public $Code; // int
-  public $Message; // string
-  public $LogID; // long
-  public $Params; // ExactTarget_Params
+  /**
+   * @var int $Code
+   */
+  public $Code;
+  /**
+   * @var string $Message
+   */
+  public $Message;
+  /**
+   * @var long $LogID
+   */
+  public $LogID;
+  /**
+   * @var ExactTarget_Params $Params
+   */
+  public $Params;
 }
 
 class ExactTarget_Params {
-  public $Param; // string
+  /**
+   * @var string $Param
+   */
+  public $Param;
 }
 
 class ExactTarget_APIObject {
-  public $Client; // ExactTarget_ClientID
-  public $PartnerKey; // string
-  public $PartnerProperties; // ExactTarget_APIProperty
-  public $CreatedDate; // dateTime
-  public $ModifiedDate; // dateTime
-  public $ID; // int
-  public $ObjectID; // string
-  public $CustomerKey; // string
-  public $Owner; // ExactTarget_Owner
-  public $CorrelationID; // string
-  public $ObjectState; // string
+  /**
+   * @var ExactTarget_ClientID $Client
+   */
+  public $Client;
+  /**
+   * @var string $PartnerKey
+   */
+  public $PartnerKey;
+  /**
+   * @var ExactTarget_APIProperty $PartnerProperties
+   */
+  public $PartnerProperties;
+  /**
+   * @var dateTime $CreatedDate
+   */
+  public $CreatedDate;
+  /**
+   * @var dateTime $ModifiedDate
+   */
+  public $ModifiedDate;
+  /**
+   * @var int $ID
+   */
+  public $ID;
+  /**
+   * @var string $ObjectID
+   */
+  public $ObjectID;
+  /**
+   * @var string $CustomerKey
+   */
+  public $CustomerKey;
+  /**
+   * @var ExactTarget_Owner $Owner
+   */
+  public $Owner;
+  /**
+   * @var string $CorrelationID
+   */
+  public $CorrelationID;
+  /**
+   * @var string $ObjectState
+   */
+  public $ObjectState;
 }
 
 class ExactTarget_ClientID {
-  public $ClientID; // int
-  public $ID; // int
-  public $PartnerClientKey; // string
-  public $UserID; // int
-  public $PartnerUserKey; // string
-  public $CreatedBy; // int
-  public $ModifiedBy; // int
-  public $EnterpriseID; // long
-  public $CustomerKey; // string
+  /**
+   * @var int $ClientID
+   */
+  public $ClientID;
+  /**
+   * @var int $ID
+   */
+  public $ID;
+  /**
+   * @var string $PartnerClientKey
+   */
+  public $PartnerClientKey;
+  /**
+   * @var int $UserID
+   */
+  public $UserID;
+  /**
+   * @var string $PartnerUserKey
+   */
+  public $PartnerUserKey;
+  /**
+   * @var int $CreatedBy
+   */
+  public $CreatedBy;
+  /**
+   * @var int $ModifiedBy
+   */
+  public $ModifiedBy;
+  /**
+   * @var long $EnterpriseID
+   */
+  public $EnterpriseID;
+  /**
+   * @var string $CustomerKey
+   */
+  public $CustomerKey;
 }
 
 class ExactTarget_APIProperty {
-  public $Name; // string
-  public $Value; // string
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Value
+   */
+  public $Value;
 }
 
 class ExactTarget_NullAPIProperty {
 }
 
 class ExactTarget_DataFolder {
-  public $ParentFolder; // ExactTarget_DataFolder
-  public $Name; // string
-  public $Description; // string
-  public $ContentType; // string
-  public $IsActive; // boolean
-  public $IsEditable; // boolean
-  public $AllowChildren; // boolean
+  /**
+   * @var ExactTarget_DataFolder $ParentFolder
+   */
+  public $ParentFolder;
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var string $ContentType
+   */
+  public $ContentType;
+  /**
+   * @var boolean $IsActive
+   */
+  public $IsActive;
+  /**
+   * @var boolean $IsEditable
+   */
+  public $IsEditable;
+  /**
+   * @var boolean $AllowChildren
+   */
+  public $AllowChildren;
 }
 
 class ExactTarget_Owner {
-  public $Client; // ExactTarget_ClientID
-  public $FromName; // string
-  public $FromAddress; // string
-  public $User; // ExactTarget_AccountUser
+  /**
+   * @var ExactTarget_ClientID $Client
+   */
+  public $Client;
+  /**
+   * @var string $FromName
+   */
+  public $FromName;
+  /**
+   * @var string $FromAddress
+   */
+  public $FromAddress;
+  /**
+   * @var ExactTarget_AccountUser $User
+   */
+  public $User;
 }
 
 class ExactTarget_AsyncResponseType {
@@ -92,57 +202,165 @@ class ExactTarget_AsyncResponseType {
 }
 
 class ExactTarget_AsyncResponse {
-  public $ResponseType; // ExactTarget_AsyncResponseType
-  public $ResponseAddress; // string
-  public $RespondWhen; // ExactTarget_RespondWhen
-  public $IncludeResults; // boolean
-  public $IncludeObjects; // boolean
-  public $OnlyIncludeBase; // boolean
+  /**
+   * @var ExactTarget_AsyncResponseType $ResponseType
+   */
+  public $ResponseType;
+  /**
+   * @var string $ResponseAddress
+   */
+  public $ResponseAddress;
+  /**
+   * @var ExactTarget_RespondWhen $RespondWhen
+   */
+  public $RespondWhen;
+  /**
+   * @var boolean $IncludeResults
+   */
+  public $IncludeResults;
+  /**
+   * @var boolean $IncludeObjects
+   */
+  public $IncludeObjects;
+  /**
+   * @var boolean $OnlyIncludeBase
+   */
+  public $OnlyIncludeBase;
 }
 
 class ExactTarget_ContainerID {
-  public $APIObject; // ExactTarget_APIObject
+  /**
+   * @var ExactTarget_APIObject $APIObject
+   */
+  public $APIObject;
 }
 
 class ExactTarget_Request {
 }
 
 class ExactTarget_Result {
-  public $StatusCode; // string
-  public $StatusMessage; // string
-  public $OrdinalID; // int
-  public $ErrorCode; // int
-  public $RequestID; // string
-  public $ConversationID; // string
-  public $OverallStatusCode; // string
-  public $RequestType; // ExactTarget_RequestType
-  public $ResultType; // string
-  public $ResultDetailXML; // string
+  /**
+   * @var string $StatusCode
+   */
+  public $StatusCode;
+  /**
+   * @var string $StatusMessage
+   */
+  public $StatusMessage;
+  /**
+   * @var int $OrdinalID
+   */
+  public $OrdinalID;
+  /**
+   * @var int $ErrorCode
+   */
+  public $ErrorCode;
+  /**
+   * @var string $RequestID
+   */
+  public $RequestID;
+  /**
+   * @var string $ConversationID
+   */
+  public $ConversationID;
+  /**
+   * @var string $OverallStatusCode
+   */
+  public $OverallStatusCode;
+  /**
+   * @var ExactTarget_RequestType $RequestType
+   */
+  public $RequestType;
+  /**
+   * @var string $ResultType
+   */
+  public $ResultType;
+  /**
+   * @var string $ResultDetailXML
+   */
+  public $ResultDetailXML;
 }
 
 class ExactTarget_ResultMessage {
-  public $RequestID; // string
-  public $ConversationID; // string
-  public $OverallStatusCode; // string
-  public $StatusCode; // string
-  public $StatusMessage; // string
-  public $ErrorCode; // int
-  public $RequestType; // ExactTarget_RequestType
-  public $ResultType; // string
-  public $ResultDetailXML; // string
-  public $SequenceCode; // int
-  public $CallsInConversation; // int
+  /**
+   * @var string $RequestID
+   */
+  public $RequestID;
+  /**
+   * @var string $ConversationID
+   */
+  public $ConversationID;
+  /**
+   * @var string $OverallStatusCode
+   */
+  public $OverallStatusCode;
+  /**
+   * @var string $StatusCode
+   */
+  public $StatusCode;
+  /**
+   * @var string $StatusMessage
+   */
+  public $StatusMessage;
+  /**
+   * @var int $ErrorCode
+   */
+  public $ErrorCode;
+  /**
+   * @var ExactTarget_RequestType $RequestType
+   */
+  public $RequestType;
+  /**
+   * @var string $ResultType
+   */
+  public $ResultType;
+  /**
+   * @var string $ResultDetailXML
+   */
+  public $ResultDetailXML;
+  /**
+   * @var int $SequenceCode
+   */
+  public $SequenceCode;
+  /**
+   * @var int $CallsInConversation
+   */
+  public $CallsInConversation;
 }
 
 class ExactTarget_ResultItem {
-  public $RequestID; // string
-  public $ConversationID; // string
-  public $StatusCode; // string
-  public $StatusMessage; // string
-  public $OrdinalID; // int
-  public $ErrorCode; // int
-  public $RequestType; // ExactTarget_RequestType
-  public $RequestObjectType; // string
+  /**
+   * @var string $RequestID
+   */
+  public $RequestID;
+  /**
+   * @var string $ConversationID
+   */
+  public $ConversationID;
+  /**
+   * @var string $StatusCode
+   */
+  public $StatusCode;
+  /**
+   * @var string $StatusMessage
+   */
+  public $StatusMessage;
+  /**
+   * @var int $OrdinalID
+   */
+  public $OrdinalID;
+  /**
+   * @var int $ErrorCode
+   */
+  public $ErrorCode;
+  /**
+   * @var ExactTarget_RequestType $RequestType
+   */
+  public $RequestType;
+  /**
+   * @var string $RequestObjectType
+   */
+  public $RequestObjectType;
 }
 
 class ExactTarget_Priority {
@@ -152,29 +370,80 @@ class ExactTarget_Priority {
 }
 
 class ExactTarget_Options {
-  public $Client; // ExactTarget_ClientID
-  public $SendResponseTo; // ExactTarget_AsyncResponse
-  public $SaveOptions; // ExactTarget_SaveOptions
-  public $Priority; // byte
-  public $ConversationID; // string
-  public $SequenceCode; // int
-  public $CallsInConversation; // int
-  public $ScheduledTime; // dateTime
-  public $RequestType; // ExactTarget_RequestType
-  public $QueuePriority; // ExactTarget_Priority
+  /**
+   * @var ExactTarget_ClientID $Client
+   */
+  public $Client;
+  /**
+   * @var ExactTarget_AsyncResponse $SendResponseTo
+   */
+  public $SendResponseTo;
+  /**
+   * @var ExactTarget_SaveOptions $SaveOptions
+   */
+  public $SaveOptions;
+  /**
+   * @var byte $Priority
+   */
+  public $Priority;
+  /**
+   * @var string $ConversationID
+   */
+  public $ConversationID;
+  /**
+   * @var int $SequenceCode
+   */
+  public $SequenceCode;
+  /**
+   * @var int $CallsInConversation
+   */
+  public $CallsInConversation;
+  /**
+   * @var dateTime $ScheduledTime
+   */
+  public $ScheduledTime;
+  /**
+   * @var ExactTarget_RequestType $RequestType
+   */
+  public $RequestType;
+  /**
+   * @var ExactTarget_Priority $QueuePriority
+   */
+  public $QueuePriority;
 }
 
 class ExactTarget_SaveOptions {
-  public $SaveOption; // ExactTarget_SaveOption
+  /**
+   * @var ExactTarget_SaveOption $SaveOption
+   */
+  public $SaveOption;
 }
 
 class ExactTarget_TaskResult {
-  public $StatusCode; // string
-  public $StatusMessage; // string
-  public $OrdinalID; // int
-  public $ErrorCode; // int
-  public $ID; // string
-  public $InteractionObjectID; // string
+  /**
+   * @var string $StatusCode
+   */
+  public $StatusCode;
+  /**
+   * @var string $StatusMessage
+   */
+  public $StatusMessage;
+  /**
+   * @var int $OrdinalID
+   */
+  public $OrdinalID;
+  /**
+   * @var int $ErrorCode
+   */
+  public $ErrorCode;
+  /**
+   * @var string $ID
+   */
+  public $ID;
+  /**
+   * @var string $InteractionObjectID
+   */
+  public $InteractionObjectID;
 }
 
 class ExactTarget_RequestType {
@@ -192,8 +461,14 @@ class ExactTarget_RespondWhen {
 }
 
 class ExactTarget_SaveOption {
-  public $PropertyName; // string
-  public $SaveAction; // ExactTarget_SaveAction
+  /**
+   * @var string $PropertyName
+   */
+  public $PropertyName;
+  /**
+   * @var ExactTarget_SaveAction $SaveAction
+   */
+  public $SaveAction;
 }
 
 class ExactTarget_SaveAction {
@@ -206,173 +481,407 @@ class ExactTarget_SaveAction {
 }
 
 class ExactTarget_CreateRequest {
-  public $Options; // ExactTarget_CreateOptions
-  public $Objects; // ExactTarget_APIObject
+  /**
+   * @var ExactTarget_CreateOptions $Options
+   */
+  public $Options;
+  /**
+   * @var ExactTarget_APIObject $Objects
+   */
+  public $Objects;
 }
 
 class ExactTarget_CreateResult {
-  public $NewID; // int
-  public $NewObjectID; // string
-  public $PartnerKey; // string
-  public $Object; // ExactTarget_APIObject
-  public $CreateResults; // ExactTarget_CreateResult
-  public $ParentPropertyName; // string
+  /**
+   * @var int $NewID
+   */
+  public $NewID;
+  /**
+   * @var string $NewObjectID
+   */
+  public $NewObjectID;
+  /**
+   * @var string $PartnerKey
+   */
+  public $PartnerKey;
+  /**
+   * @var ExactTarget_APIObject $Object
+   */
+  public $Object;
+  /**
+   * @var ExactTarget_CreateResult $CreateResults
+   */
+  public $CreateResults;
+  /**
+   * @var string $ParentPropertyName
+   */
+  public $ParentPropertyName;
 }
 
 class ExactTarget_CreateResponse {
-  public $Results; // ExactTarget_CreateResult
-  public $RequestID; // string
-  public $OverallStatus; // string
+  /**
+   * @var ExactTarget_CreateResult $Results
+   */
+  public $Results;
+  /**
+   * @var string $RequestID
+   */
+  public $RequestID;
+  /**
+   * @var string $OverallStatus
+   */
+  public $OverallStatus;
 }
 
 class ExactTarget_CreateOptions {
-  public $Container; // ExactTarget_ContainerID
+  /**
+   * @var ExactTarget_ContainerID $Container
+   */
+  public $Container;
 }
 
 class ExactTarget_UpdateOptions {
-  public $Container; // ExactTarget_ContainerID
-  public $Action; // string
+  /**
+   * @var ExactTarget_ContainerID $Container
+   */
+  public $Container;
+  /**
+   * @var string $Action
+   */
+  public $Action;
 }
 
 class ExactTarget_UpdateRequest {
-  public $Options; // ExactTarget_UpdateOptions
-  public $Objects; // ExactTarget_APIObject
+  /**
+   * @var ExactTarget_UpdateOptions $Options
+   */
+  public $Options;
+  /**
+   * @var ExactTarget_APIObject $Objects
+   */
+  public $Objects;
 }
 
 class ExactTarget_UpdateResult {
-  public $Object; // ExactTarget_APIObject
-  public $UpdateResults; // ExactTarget_UpdateResult
-  public $ParentPropertyName; // string
+  /**
+   * @var ExactTarget_APIObject $Object
+   */
+  public $Object;
+  /**
+   * @var ExactTarget_UpdateResult $UpdateResults
+   */
+  public $UpdateResults;
+  /**
+   * @var string $ParentPropertyName
+   */
+  public $ParentPropertyName;
 }
 
 class ExactTarget_UpdateResponse {
-  public $Results; // ExactTarget_UpdateResult
-  public $RequestID; // string
-  public $OverallStatus; // string
+  /**
+   * @var ExactTarget_UpdateResult $Results
+   */
+  public $Results;
+  /**
+   * @var string $RequestID
+   */
+  public $RequestID;
+  /**
+   * @var string $OverallStatus
+   */
+  public $OverallStatus;
 }
 
 class ExactTarget_DeleteOptions {
 }
 
 class ExactTarget_DeleteRequest {
-  public $Options; // ExactTarget_DeleteOptions
-  public $Objects; // ExactTarget_APIObject
+  /**
+   * @var ExactTarget_DeleteOptions $Options
+   */
+  public $Options;
+  /**
+   * @var ExactTarget_APIObject $Objects
+   */
+  public $Objects;
 }
 
 class ExactTarget_DeleteResult {
-  public $Object; // ExactTarget_APIObject
+  /**
+   * @var ExactTarget_APIObject $Object
+   */
+  public $Object;
 }
 
 class ExactTarget_DeleteResponse {
-  public $Results; // ExactTarget_DeleteResult
-  public $RequestID; // string
-  public $OverallStatus; // string
+  /**
+   * @var ExactTarget_DeleteResult $Results
+   */
+  public $Results;
+  /**
+   * @var string $RequestID
+   */
+  public $RequestID;
+  /**
+   * @var string $OverallStatus
+   */
+  public $OverallStatus;
 }
 
 class ExactTarget_RetrieveRequest {
-  public $ClientIDs; // ExactTarget_ClientID
-  public $ObjectType; // string
-  public $Properties; // string
-  public $Filter; // ExactTarget_FilterPart
-  public $RespondTo; // ExactTarget_AsyncResponse
-  public $PartnerProperties; // ExactTarget_APIProperty
-  public $ContinueRequest; // string
-  public $QueryAllAccounts; // boolean
-  public $RetrieveAllSinceLastBatch; // boolean
-  public $RepeatLastResult; // boolean
-  public $Retrieves; // ExactTarget_Retrieves
-  public $Options; // ExactTarget_RetrieveOptions
+  /**
+   * @var ExactTarget_ClientID $ClientIDs
+   */
+  public $ClientIDs;
+  /**
+   * @var string $ObjectType
+   */
+  public $ObjectType;
+  /**
+   * @var string $Properties
+   */
+  public $Properties;
+  /**
+   * @var ExactTarget_FilterPart $Filter
+   */
+  public $Filter;
+  /**
+   * @var ExactTarget_AsyncResponse $RespondTo
+   */
+  public $RespondTo;
+  /**
+   * @var ExactTarget_APIProperty $PartnerProperties
+   */
+  public $PartnerProperties;
+  /**
+   * @var string $ContinueRequest
+   */
+  public $ContinueRequest;
+  /**
+   * @var boolean $QueryAllAccounts
+   */
+  public $QueryAllAccounts;
+  /**
+   * @var boolean $RetrieveAllSinceLastBatch
+   */
+  public $RetrieveAllSinceLastBatch;
+  /**
+   * @var boolean $RepeatLastResult
+   */
+  public $RepeatLastResult;
+  /**
+   * @var ExactTarget_Retrieves $Retrieves
+   */
+  public $Retrieves;
+  /**
+   * @var ExactTarget_RetrieveOptions $Options
+   */
+  public $Options;
 }
 
 class ExactTarget_Retrieves {
-  public $Request; // ExactTarget_Request
+  /**
+   * @var ExactTarget_Request $Request
+   */
+  public $Request;
 }
 
 class ExactTarget_RetrieveRequestMsg {
-  public $RetrieveRequest; // ExactTarget_RetrieveRequest
+  /**
+   * @var ExactTarget_RetrieveRequest $RetrieveRequest
+   */
+  public $RetrieveRequest;
 }
 
 class ExactTarget_RetrieveResponseMsg {
-  public $OverallStatus; // string
-  public $RequestID; // string
-  public $Results; // ExactTarget_APIObject
+  /**
+   * @var string $OverallStatus
+   */
+  public $OverallStatus;
+  /**
+   * @var string $RequestID
+   */
+  public $RequestID;
+  /**
+   * @var ExactTarget_APIObject $Results
+   */
+  public $Results;
 }
 
 class ExactTarget_RetrieveSingleRequest {
-  public $RequestedObject; // ExactTarget_APIObject
-  public $RetrieveOption; // ExactTarget_Options
+  /**
+   * @var ExactTarget_APIObject $RequestedObject
+   */
+  public $RequestedObject;
+  /**
+   * @var ExactTarget_Options $RetrieveOption
+   */
+  public $RetrieveOption;
 }
 
 
 
 class ExactTarget_RetrieveSingleOptions {
-  public $Parameters; // ExactTarget_Parameters
+  /**
+   * @var ExactTarget_Parameters $Parameters
+   */
+  public $Parameters;
 }
 
 class ExactTarget_RetrieveOptions {
-  public $BatchSize; // int
-  public $IncludeObjects; // boolean
-  public $OnlyIncludeBase; // boolean
+  /**
+   * @var int $BatchSize
+   */
+  public $BatchSize;
+  /**
+   * @var boolean $IncludeObjects
+   */
+  public $IncludeObjects;
+  /**
+   * @var boolean $OnlyIncludeBase
+   */
+  public $OnlyIncludeBase;
 }
 
 class ExactTarget_QueryRequest {
-  public $ClientIDs; // ExactTarget_ClientID
-  public $Query; // ExactTarget_Query
-  public $RespondTo; // ExactTarget_AsyncResponse
-  public $PartnerProperties; // ExactTarget_APIProperty
-  public $ContinueRequest; // string
-  public $QueryAllAccounts; // boolean
-  public $RetrieveAllSinceLastBatch; // boolean
+  /**
+   * @var ExactTarget_ClientID $ClientIDs
+   */
+  public $ClientIDs;
+  /**
+   * @var ExactTarget_Query $Query
+   */
+  public $Query;
+  /**
+   * @var ExactTarget_AsyncResponse $RespondTo
+   */
+  public $RespondTo;
+  /**
+   * @var ExactTarget_APIProperty $PartnerProperties
+   */
+  public $PartnerProperties;
+  /**
+   * @var string $ContinueRequest
+   */
+  public $ContinueRequest;
+  /**
+   * @var boolean $QueryAllAccounts
+   */
+  public $QueryAllAccounts;
+  /**
+   * @var boolean $RetrieveAllSinceLastBatch
+   */
+  public $RetrieveAllSinceLastBatch;
 }
 
 class ExactTarget_QueryRequestMsg {
-  public $QueryRequest; // ExactTarget_QueryRequest
+  /**
+   * @var ExactTarget_QueryRequest $QueryRequest
+   */
+  public $QueryRequest;
 }
 
 class ExactTarget_QueryResponseMsg {
-  public $OverallStatus; // string
-  public $RequestID; // string
-  public $Results; // ExactTarget_APIObject
+  /**
+   * @var string $OverallStatus
+   */
+  public $OverallStatus;
+  /**
+   * @var string $RequestID
+   */
+  public $RequestID;
+  /**
+   * @var ExactTarget_APIObject $Results
+   */
+  public $Results;
 }
 
 class ExactTarget_QueryObject {
-  public $ObjectType; // string
-  public $Properties; // string
-  public $Objects; // ExactTarget_QueryObject
+  /**
+   * @var string $ObjectType
+   */
+  public $ObjectType;
+  /**
+   * @var string $Properties
+   */
+  public $Properties;
+  /**
+   * @var ExactTarget_QueryObject $Objects
+   */
+  public $Objects;
 }
 
 class ExactTarget_Query {
-  public $Object; // ExactTarget_QueryObject
-  public $Filter; // ExactTarget_FilterPart
+  /**
+   * @var ExactTarget_QueryObject $Object
+   */
+  public $Object;
+  /**
+   * @var ExactTarget_FilterPart $Filter
+   */
+  public $Filter;
 }
 
 class ExactTarget_FilterPart {
 }
 
 class ExactTarget_SimpleFilterPart {
-  public $Property; // string
-  public $SimpleOperator; // ExactTarget_SimpleOperators
-  public $Value; // string
-  public $DateValue; // dateTime
+  /**
+   * @var string $Property
+   */
+  public $Property;
+  /**
+   * @var ExactTarget_SimpleOperators $SimpleOperator
+   */
+  public $SimpleOperator;
+  /**
+   * @var string $Value
+   */
+  public $Value;
+  /**
+   * @var dateTime $DateValue
+   */
+  public $DateValue;
 }
 
 class ExactTarget_TagFilterPart {
-  public $Tags; // ExactTarget_Tags
+  /**
+   * @var ExactTarget_Tags $Tags
+   */
+  public $Tags;
 }
 
 class ExactTarget_Tags {
-  public $Tag; // string
+  /**
+   * @var string $Tag
+   */
+  public $Tag;
 }
 
 class ExactTarget_ComplexFilterPart {
-  public $LeftOperand; // ExactTarget_FilterPart
-  public $LogicalOperator; // ExactTarget_LogicalOperators
-  public $RightOperand; // ExactTarget_FilterPart
-  public $AdditionalOperands; // ExactTarget_AdditionalOperands
+  /**
+   * @var ExactTarget_FilterPart $LeftOperand
+   */
+  public $LeftOperand;
+  /**
+   * @var ExactTarget_LogicalOperators $LogicalOperator
+   */
+  public $LogicalOperator;
+  /**
+   * @var ExactTarget_FilterPart $RightOperand
+   */
+  public $RightOperand;
+  /**
+   * @var ExactTarget_AdditionalOperands $AdditionalOperands
+   */
+  public $AdditionalOperands;
 }
 
 class ExactTarget_AdditionalOperands {
-  public $Operand; // ExactTarget_FilterPart
+  /**
+   * @var ExactTarget_FilterPart $Operand
+   */
+  public $Operand;
 }
 
 class ExactTarget_SimpleOperators {
@@ -406,101 +915,296 @@ class ExactTarget_LogicalOperators {
 }
 
 class ExactTarget_DefinitionRequestMsg {
-  public $DescribeRequests; // ExactTarget_ArrayOfObjectDefinitionRequest
+  /**
+   * @var ExactTarget_ArrayOfObjectDefinitionRequest $DescribeRequests
+   */
+  public $DescribeRequests;
 }
 
 class ExactTarget_ArrayOfObjectDefinitionRequest {
-  public $ObjectDefinitionRequest; // ExactTarget_ObjectDefinitionRequest
+  /**
+   * @var ExactTarget_ObjectDefinitionRequest $ObjectDefinitionRequest
+   */
+  public $ObjectDefinitionRequest;
 }
 
 class ExactTarget_ObjectDefinitionRequest {
-  public $Client; // ExactTarget_ClientID
-  public $ObjectType; // string
+  /**
+   * @var ExactTarget_ClientID $Client
+   */
+  public $Client;
+  /**
+   * @var string $ObjectType
+   */
+  public $ObjectType;
 }
 
 class ExactTarget_DefinitionResponseMsg {
-  public $ObjectDefinition; // ExactTarget_ObjectDefinition
-  public $RequestID; // string
+  /**
+   * @var ExactTarget_ObjectDefinition $ObjectDefinition
+   */
+  public $ObjectDefinition;
+  /**
+   * @var string $RequestID
+   */
+  public $RequestID;
 }
 
 class ExactTarget_PropertyDefinition {
-  public $Name; // string
-  public $DataType; // string
-  public $ValueType; // ExactTarget_SoapType
-  public $PropertyType; // ExactTarget_PropertyType
-  public $IsCreatable; // boolean
-  public $IsUpdatable; // boolean
-  public $IsRetrievable; // boolean
-  public $IsQueryable; // boolean
-  public $IsFilterable; // boolean
-  public $IsPartnerProperty; // boolean
-  public $IsAccountProperty; // boolean
-  public $PartnerMap; // string
-  public $AttributeMaps; // ExactTarget_AttributeMap
-  public $Markups; // ExactTarget_APIProperty
-  public $Precision; // int
-  public $Scale; // int
-  public $Label; // string
-  public $Description; // string
-  public $DefaultValue; // string
-  public $MinLength; // int
-  public $MaxLength; // int
-  public $MinValue; // string
-  public $MaxValue; // string
-  public $IsRequired; // boolean
-  public $IsViewable; // boolean
-  public $IsEditable; // boolean
-  public $IsNillable; // boolean
-  public $IsRestrictedPicklist; // boolean
-  public $PicklistItems; // ExactTarget_PicklistItems
-  public $IsSendTime; // boolean
-  public $DisplayOrder; // int
-  public $References; // ExactTarget_References
-  public $RelationshipName; // string
-  public $Status; // string
-  public $IsContextSpecific; // boolean
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $DataType
+   */
+  public $DataType;
+  /**
+   * @var ExactTarget_SoapType $ValueType
+   */
+  public $ValueType;
+  /**
+   * @var ExactTarget_PropertyType $PropertyType
+   */
+  public $PropertyType;
+  /**
+   * @var boolean $IsCreatable
+   */
+  public $IsCreatable;
+  /**
+   * @var boolean $IsUpdatable
+   */
+  public $IsUpdatable;
+  /**
+   * @var boolean $IsRetrievable
+   */
+  public $IsRetrievable;
+  /**
+   * @var boolean $IsQueryable
+   */
+  public $IsQueryable;
+  /**
+   * @var boolean $IsFilterable
+   */
+  public $IsFilterable;
+  /**
+   * @var boolean $IsPartnerProperty
+   */
+  public $IsPartnerProperty;
+  /**
+   * @var boolean $IsAccountProperty
+   */
+  public $IsAccountProperty;
+  /**
+   * @var string $PartnerMap
+   */
+  public $PartnerMap;
+  /**
+   * @var ExactTarget_AttributeMap $AttributeMaps
+   */
+  public $AttributeMaps;
+  /**
+   * @var ExactTarget_APIProperty $Markups
+   */
+  public $Markups;
+  /**
+   * @var int $Precision
+   */
+  public $Precision;
+  /**
+   * @var int $Scale
+   */
+  public $Scale;
+  /**
+   * @var string $Label
+   */
+  public $Label;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var string $DefaultValue
+   */
+  public $DefaultValue;
+  /**
+   * @var int $MinLength
+   */
+  public $MinLength;
+  /**
+   * @var int $MaxLength
+   */
+  public $MaxLength;
+  /**
+   * @var string $MinValue
+   */
+  public $MinValue;
+  /**
+   * @var string $MaxValue
+   */
+  public $MaxValue;
+  /**
+   * @var boolean $IsRequired
+   */
+  public $IsRequired;
+  /**
+   * @var boolean $IsViewable
+   */
+  public $IsViewable;
+  /**
+   * @var boolean $IsEditable
+   */
+  public $IsEditable;
+  /**
+   * @var boolean $IsNillable
+   */
+  public $IsNillable;
+  /**
+   * @var boolean $IsRestrictedPicklist
+   */
+  public $IsRestrictedPicklist;
+  /**
+   * @var ExactTarget_PicklistItems $PicklistItems
+   */
+  public $PicklistItems;
+  /**
+   * @var boolean $IsSendTime
+   */
+  public $IsSendTime;
+  /**
+   * @var int $DisplayOrder
+   */
+  public $DisplayOrder;
+  /**
+   * @var ExactTarget_References $References
+   */
+  public $References;
+  /**
+   * @var string $RelationshipName
+   */
+  public $RelationshipName;
+  /**
+   * @var string $Status
+   */
+  public $Status;
+  /**
+   * @var boolean $IsContextSpecific
+   */
+  public $IsContextSpecific;
 }
 
 class ExactTarget_PicklistItems {
-  public $PicklistItem; // ExactTarget_PicklistItem
+  /**
+   * @var ExactTarget_PicklistItem $PicklistItem
+   */
+  public $PicklistItem;
 }
 
 class ExactTarget_References {
-  public $Reference; // ExactTarget_APIObject
+  /**
+   * @var ExactTarget_APIObject $Reference
+   */
+  public $Reference;
 }
 
 class ExactTarget_ObjectDefinition {
-  public $ObjectType; // string
-  public $Name; // string
-  public $IsCreatable; // boolean
-  public $IsUpdatable; // boolean
-  public $IsRetrievable; // boolean
-  public $IsQueryable; // boolean
-  public $IsReference; // boolean
-  public $ReferencedType; // string
-  public $IsPropertyCollection; // string
-  public $IsObjectCollection; // boolean
-  public $Properties; // ExactTarget_PropertyDefinition
-  public $ExtendedProperties; // ExactTarget_ExtendedProperties
-  public $ChildObjects; // ExactTarget_ObjectDefinition
+  /**
+   * @var string $ObjectType
+   */
+  public $ObjectType;
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var boolean $IsCreatable
+   */
+  public $IsCreatable;
+  /**
+   * @var boolean $IsUpdatable
+   */
+  public $IsUpdatable;
+  /**
+   * @var boolean $IsRetrievable
+   */
+  public $IsRetrievable;
+  /**
+   * @var boolean $IsQueryable
+   */
+  public $IsQueryable;
+  /**
+   * @var boolean $IsReference
+   */
+  public $IsReference;
+  /**
+   * @var string $ReferencedType
+   */
+  public $ReferencedType;
+  /**
+   * @var string $IsPropertyCollection
+   */
+  public $IsPropertyCollection;
+  /**
+   * @var boolean $IsObjectCollection
+   */
+  public $IsObjectCollection;
+  /**
+   * @var ExactTarget_PropertyDefinition $Properties
+   */
+  public $Properties;
+  /**
+   * @var ExactTarget_ExtendedProperties $ExtendedProperties
+   */
+  public $ExtendedProperties;
+  /**
+   * @var ExactTarget_ObjectDefinition $ChildObjects
+   */
+  public $ChildObjects;
 }
 
 class ExactTarget_ExtendedProperties {
-  public $ExtendedProperty; // ExactTarget_PropertyDefinition
+  /**
+   * @var ExactTarget_PropertyDefinition $ExtendedProperty
+   */
+  public $ExtendedProperty;
 }
 
 class ExactTarget_AttributeMap {
-  public $EntityName; // string
-  public $ColumnName; // string
-  public $ColumnNameMappedTo; // string
-  public $EntityNameMappedTo; // string
-  public $AdditionalData; // ExactTarget_APIProperty
+  /**
+   * @var string $EntityName
+   */
+  public $EntityName;
+  /**
+   * @var string $ColumnName
+   */
+  public $ColumnName;
+  /**
+   * @var string $ColumnNameMappedTo
+   */
+  public $ColumnNameMappedTo;
+  /**
+   * @var string $EntityNameMappedTo
+   */
+  public $EntityNameMappedTo;
+  /**
+   * @var ExactTarget_APIProperty $AdditionalData
+   */
+  public $AdditionalData;
 }
 
 class ExactTarget_PicklistItem {
-  public $IsDefaultValue; // boolean
-  public $Label; // string
-  public $Value; // string
+  /**
+   * @var boolean $IsDefaultValue
+   */
+  public $IsDefaultValue;
+  /**
+   * @var string $Label
+   */
+  public $Label;
+  /**
+   * @var string $Value
+   */
+  public $Value;
 }
 
 class ExactTarget_SoapType {
@@ -518,207 +1222,477 @@ class ExactTarget_PropertyType {
 }
 
 class ExactTarget_ExecuteRequest {
-  public $Client; // ExactTarget_ClientID
-  public $Name; // string
-  public $Parameters; // ExactTarget_APIProperty
+  /**
+   * @var ExactTarget_ClientID $Client
+   */
+  public $Client;
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var ExactTarget_APIProperty $Parameters
+   */
+  public $Parameters;
 }
 
 class ExactTarget_ExecuteResponse {
-  public $StatusCode; // string
-  public $StatusMessage; // string
-  public $OrdinalID; // int
-  public $Results; // ExactTarget_APIProperty
-  public $ErrorCode; // int
+  /**
+   * @var string $StatusCode
+   */
+  public $StatusCode;
+  /**
+   * @var string $StatusMessage
+   */
+  public $StatusMessage;
+  /**
+   * @var int $OrdinalID
+   */
+  public $OrdinalID;
+  /**
+   * @var ExactTarget_APIProperty $Results
+   */
+  public $Results;
+  /**
+   * @var int $ErrorCode
+   */
+  public $ErrorCode;
 }
 
 class ExactTarget_ExecuteRequestMsg {
-  public $Requests; // ExactTarget_ExecuteRequest
+  /**
+   * @var ExactTarget_ExecuteRequest $Requests
+   */
+  public $Requests;
 }
 
 class ExactTarget_ExecuteResponseMsg {
-  public $OverallStatus; // string
-  public $RequestID; // string
-  public $Results; // ExactTarget_ExecuteResponse
+  /**
+   * @var string $OverallStatus
+   */
+  public $OverallStatus;
+  /**
+   * @var string $RequestID
+   */
+  public $RequestID;
+  /**
+   * @var ExactTarget_ExecuteResponse $Results
+   */
+  public $Results;
 }
 
 class ExactTarget_InteractionDefinition {
-  public $InteractionObjectID; // string
+  /**
+   * @var string $InteractionObjectID
+   */
+  public $InteractionObjectID;
 }
 
 class ExactTarget_InteractionBaseObject {
-  public $Name; // string
-  public $Description; // string
-  public $Keyword; // string
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var string $Keyword
+   */
+  public $Keyword;
 }
 
 class ExactTarget_PerformOptions {
-  public $Explanation; // string
+  /**
+   * @var string $Explanation
+   */
+  public $Explanation;
 }
 
 class ExactTarget_CampaignPerformOptions {
-  public $OccurrenceIDs; // string
-  public $OccurrenceIDsIndex; // int
+  /**
+   * @var string $OccurrenceIDs
+   */
+  public $OccurrenceIDs;
+  /**
+   * @var int $OccurrenceIDsIndex
+   */
+  public $OccurrenceIDsIndex;
 }
 
 class ExactTarget_PerformRequest {
-  public $Client; // ExactTarget_ClientID
-  public $Action; // string
-  public $Definitions; // ExactTarget_Definitions
+  /**
+   * @var ExactTarget_ClientID $Client
+   */
+  public $Client;
+  /**
+   * @var string $Action
+   */
+  public $Action;
+  /**
+   * @var ExactTarget_Definitions $Definitions
+   */
+  public $Definitions;
 }
 
 class ExactTarget_Definitions {
-  public $Definition; // ExactTarget_InteractionBaseObject
+  /**
+   * @var ExactTarget_InteractionBaseObject $Definition
+   */
+  public $Definition;
 }
 
 class ExactTarget_PerformResponse {
-  public $StatusCode; // string
-  public $StatusMessage; // string
-  public $OrdinalID; // int
-  public $Results; // ExactTarget_Results
-  public $ErrorCode; // int
+  /**
+   * @var string $StatusCode
+   */
+  public $StatusCode;
+  /**
+   * @var string $StatusMessage
+   */
+  public $StatusMessage;
+  /**
+   * @var int $OrdinalID
+   */
+  public $OrdinalID;
+  /**
+   * @var ExactTarget_Results $Results
+   */
+  public $Results;
+  /**
+   * @var int $ErrorCode
+   */
+  public $ErrorCode;
 }
 
 class ExactTarget_Results {
-  public $Result; // ExactTarget_APIProperty
+  /**
+   * @var ExactTarget_APIProperty $Result
+   */
+  public $Result;
 }
 
 class ExactTarget_PerformResult {
-  public $Object; // ExactTarget_APIObject
-  public $Task; // ExactTarget_TaskResult
+  /**
+   * @var ExactTarget_APIObject $Object
+   */
+  public $Object;
+  /**
+   * @var ExactTarget_TaskResult $Task
+   */
+  public $Task;
 }
 
 class ExactTarget_PerformRequestMsg {
-  public $Options; // ExactTarget_PerformOptions
-  public $Action; // string
-  public $Definitions; // ExactTarget_Definitions
+  /**
+   * @var ExactTarget_PerformOptions $Options
+   */
+  public $Options;
+  /**
+   * @var string $Action
+   */
+  public $Action;
+  /**
+   * @var ExactTarget_Definitions $Definitions
+   */
+  public $Definitions;
 }
 
 
 class ExactTarget_PerformResponseMsg {
-  public $Results; // ExactTarget_Results
-  public $OverallStatus; // string
-  public $OverallStatusMessage; // string
-  public $RequestID; // string
+  /**
+   * @var ExactTarget_Results $Results
+   */
+  public $Results;
+  /**
+   * @var string $OverallStatus
+   */
+  public $OverallStatus;
+  /**
+   * @var string $OverallStatusMessage
+   */
+  public $OverallStatusMessage;
+  /**
+   * @var string $RequestID
+   */
+  public $RequestID;
 }
 
 
 
 class ExactTarget_ValidationAction {
-  public $ValidationType; // string
-  public $ValidationOptions; // ExactTarget_ValidationOptions
+  /**
+   * @var string $ValidationType
+   */
+  public $ValidationType;
+  /**
+   * @var ExactTarget_ValidationOptions $ValidationOptions
+   */
+  public $ValidationOptions;
 }
 
 class ExactTarget_ValidationOptions {
-  public $ValidationOption; // ExactTarget_APIProperty
+  /**
+   * @var ExactTarget_APIProperty $ValidationOption
+   */
+  public $ValidationOption;
 }
 
 class ExactTarget_SpamAssassinValidation {
 }
 
 class ExactTarget_ContentValidation {
-  public $ValidationAction; // ExactTarget_ValidationAction
-  public $Email; // ExactTarget_Email
-  public $Subscribers; // ExactTarget_Subscribers
+  /**
+   * @var ExactTarget_ValidationAction $ValidationAction
+   */
+  public $ValidationAction;
+  /**
+   * @var ExactTarget_Email $Email
+   */
+  public $Email;
+  /**
+   * @var ExactTarget_Subscribers $Subscribers
+   */
+  public $Subscribers;
 }
 
 class ExactTarget_Subscribers {
-  public $Subscriber; // ExactTarget_Subscriber
+  /**
+   * @var ExactTarget_Subscriber $Subscriber
+   */
+  public $Subscriber;
 }
 
 class ExactTarget_ContentValidationResult {
 }
 
 class ExactTarget_ValidationResult {
-  public $Subscriber; // ExactTarget_Subscriber
-  public $CheckTime; // dateTime
-  public $CheckTimeUTC; // dateTime
-  public $IsResultValid; // boolean
-  public $IsSpam; // boolean
-  public $Score; // double
-  public $Threshold; // double
-  public $Message; // string
+  /**
+   * @var ExactTarget_Subscriber $Subscriber
+   */
+  public $Subscriber;
+  /**
+   * @var dateTime $CheckTime
+   */
+  public $CheckTime;
+  /**
+   * @var dateTime $CheckTimeUTC
+   */
+  public $CheckTimeUTC;
+  /**
+   * @var boolean $IsResultValid
+   */
+  public $IsResultValid;
+  /**
+   * @var boolean $IsSpam
+   */
+  public $IsSpam;
+  /**
+   * @var double $Score
+   */
+  public $Score;
+  /**
+   * @var double $Threshold
+   */
+  public $Threshold;
+  /**
+   * @var string $Message
+   */
+  public $Message;
 }
 
 class ExactTarget_ContentValidationTaskResult {
-  public $ValidationResults; // ExactTarget_ValidationResults
+  /**
+   * @var ExactTarget_ValidationResults $ValidationResults
+   */
+  public $ValidationResults;
 }
 
 class ExactTarget_ValidationResults {
-  public $ValidationResult; // ExactTarget_ValidationResult
+  /**
+   * @var ExactTarget_ValidationResult $ValidationResult
+   */
+  public $ValidationResult;
 }
 
 class ExactTarget_ConfigureOptions {
 }
 
 class ExactTarget_ConfigureResult {
-  public $Object; // ExactTarget_APIObject
+  /**
+   * @var ExactTarget_APIObject $Object
+   */
+  public $Object;
 }
 
 class ExactTarget_ConfigureRequestMsg {
-  public $Options; // ExactTarget_ConfigureOptions
-  public $Action; // string
-  public $Configurations; // ExactTarget_Configurations
+  /**
+   * @var ExactTarget_ConfigureOptions $Options
+   */
+  public $Options;
+  /**
+   * @var string $Action
+   */
+  public $Action;
+  /**
+   * @var ExactTarget_Configurations $Configurations
+   */
+  public $Configurations;
 }
 
 class ExactTarget_Configurations {
-  public $Configuration; // ExactTarget_APIObject
+  /**
+   * @var ExactTarget_APIObject $Configuration
+   */
+  public $Configuration;
 }
 
 class ExactTarget_ConfigureResponseMsg {
-  public $Results; // ExactTarget_Results
-  public $OverallStatus; // string
-  public $OverallStatusMessage; // string
-  public $RequestID; // string
+  /**
+   * @var ExactTarget_Results $Results
+   */
+  public $Results;
+  /**
+   * @var string $OverallStatus
+   */
+  public $OverallStatus;
+  /**
+   * @var string $OverallStatusMessage
+   */
+  public $OverallStatusMessage;
+  /**
+   * @var string $RequestID
+   */
+  public $RequestID;
 }
 
 
 
 class ExactTarget_ScheduleDefinition {
-  public $Name; // string
-  public $Description; // string
-  public $Recurrence; // ExactTarget_Recurrence
-  public $RecurrenceType; // ExactTarget_RecurrenceTypeEnum
-  public $RecurrenceRangeType; // ExactTarget_RecurrenceRangeTypeEnum
-  public $StartDateTime; // dateTime
-  public $EndDateTime; // dateTime
-  public $Occurrences; // int
-  public $Keyword; // string
-  public $TimeZone; // ExactTarget_TimeZone
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var ExactTarget_Recurrence $Recurrence
+   */
+  public $Recurrence;
+  /**
+   * @var ExactTarget_RecurrenceTypeEnum $RecurrenceType
+   */
+  public $RecurrenceType;
+  /**
+   * @var ExactTarget_RecurrenceRangeTypeEnum $RecurrenceRangeType
+   */
+  public $RecurrenceRangeType;
+  /**
+   * @var dateTime $StartDateTime
+   */
+  public $StartDateTime;
+  /**
+   * @var dateTime $EndDateTime
+   */
+  public $EndDateTime;
+  /**
+   * @var int $Occurrences
+   */
+  public $Occurrences;
+  /**
+   * @var string $Keyword
+   */
+  public $Keyword;
+  /**
+   * @var ExactTarget_TimeZone $TimeZone
+   */
+  public $TimeZone;
 }
 
 class ExactTarget_ScheduleOptions {
 }
 
 class ExactTarget_ScheduleResponse {
-  public $StatusCode; // string
-  public $StatusMessage; // string
-  public $OrdinalID; // int
-  public $Results; // ExactTarget_Results
-  public $ErrorCode; // int
+  /**
+   * @var string $StatusCode
+   */
+  public $StatusCode;
+  /**
+   * @var string $StatusMessage
+   */
+  public $StatusMessage;
+  /**
+   * @var int $OrdinalID
+   */
+  public $OrdinalID;
+  /**
+   * @var ExactTarget_Results $Results
+   */
+  public $Results;
+  /**
+   * @var int $ErrorCode
+   */
+  public $ErrorCode;
 }
 
 
 class ExactTarget_ScheduleResult {
-  public $Object; // ExactTarget_ScheduleDefinition
-  public $Task; // ExactTarget_TaskResult
+  /**
+   * @var ExactTarget_ScheduleDefinition $Object
+   */
+  public $Object;
+  /**
+   * @var ExactTarget_TaskResult $Task
+   */
+  public $Task;
 }
 
 class ExactTarget_ScheduleRequestMsg {
-  public $Options; // ExactTarget_ScheduleOptions
-  public $Action; // string
-  public $Schedule; // ExactTarget_ScheduleDefinition
-  public $Interactions; // ExactTarget_Interactions
+  /**
+   * @var ExactTarget_ScheduleOptions $Options
+   */
+  public $Options;
+  /**
+   * @var string $Action
+   */
+  public $Action;
+  /**
+   * @var ExactTarget_ScheduleDefinition $Schedule
+   */
+  public $Schedule;
+  /**
+   * @var ExactTarget_Interactions $Interactions
+   */
+  public $Interactions;
 }
 
 class ExactTarget_Interactions {
-  public $Interaction; // ExactTarget_APIObject
+  /**
+   * @var ExactTarget_APIObject $Interaction
+   */
+  public $Interaction;
 }
 
 class ExactTarget_ScheduleResponseMsg {
-  public $Results; // ExactTarget_Results
-  public $OverallStatus; // string
-  public $OverallStatusMessage; // string
-  public $RequestID; // string
+  /**
+   * @var ExactTarget_Results $Results
+   */
+  public $Results;
+  /**
+   * @var string $OverallStatus
+   */
+  public $OverallStatus;
+  /**
+   * @var string $OverallStatusMessage
+   */
+  public $OverallStatusMessage;
+  /**
+   * @var string $RequestID
+   */
+  public $RequestID;
 }
 
 
@@ -802,71 +1776,179 @@ class ExactTarget_MonthOfYearEnum {
 }
 
 class ExactTarget_MinutelyRecurrence {
-  public $MinutelyRecurrencePatternType; // ExactTarget_MinutelyRecurrencePatternTypeEnum
-  public $MinuteInterval; // int
+  /**
+   * @var ExactTarget_MinutelyRecurrencePatternTypeEnum $MinutelyRecurrencePatternType
+   */
+  public $MinutelyRecurrencePatternType;
+  /**
+   * @var int $MinuteInterval
+   */
+  public $MinuteInterval;
 }
 
 class ExactTarget_HourlyRecurrence {
-  public $HourlyRecurrencePatternType; // ExactTarget_HourlyRecurrencePatternTypeEnum
-  public $HourInterval; // int
+  /**
+   * @var ExactTarget_HourlyRecurrencePatternTypeEnum $HourlyRecurrencePatternType
+   */
+  public $HourlyRecurrencePatternType;
+  /**
+   * @var int $HourInterval
+   */
+  public $HourInterval;
 }
 
 class ExactTarget_DailyRecurrence {
-  public $DailyRecurrencePatternType; // ExactTarget_DailyRecurrencePatternTypeEnum
-  public $DayInterval; // int
+  /**
+   * @var ExactTarget_DailyRecurrencePatternTypeEnum $DailyRecurrencePatternType
+   */
+  public $DailyRecurrencePatternType;
+  /**
+   * @var int $DayInterval
+   */
+  public $DayInterval;
 }
 
 class ExactTarget_WeeklyRecurrence {
-  public $WeeklyRecurrencePatternType; // ExactTarget_WeeklyRecurrencePatternTypeEnum
-  public $WeekInterval; // int
-  public $Sunday; // boolean
-  public $Monday; // boolean
-  public $Tuesday; // boolean
-  public $Wednesday; // boolean
-  public $Thursday; // boolean
-  public $Friday; // boolean
-  public $Saturday; // boolean
+  /**
+   * @var ExactTarget_WeeklyRecurrencePatternTypeEnum $WeeklyRecurrencePatternType
+   */
+  public $WeeklyRecurrencePatternType;
+  /**
+   * @var int $WeekInterval
+   */
+  public $WeekInterval;
+  /**
+   * @var boolean $Sunday
+   */
+  public $Sunday;
+  /**
+   * @var boolean $Monday
+   */
+  public $Monday;
+  /**
+   * @var boolean $Tuesday
+   */
+  public $Tuesday;
+  /**
+   * @var boolean $Wednesday
+   */
+  public $Wednesday;
+  /**
+   * @var boolean $Thursday
+   */
+  public $Thursday;
+  /**
+   * @var boolean $Friday
+   */
+  public $Friday;
+  /**
+   * @var boolean $Saturday
+   */
+  public $Saturday;
 }
 
 class ExactTarget_MonthlyRecurrence {
-  public $MonthlyRecurrencePatternType; // ExactTarget_MonthlyRecurrencePatternTypeEnum
-  public $MonthlyInterval; // int
-  public $ScheduledDay; // int
-  public $ScheduledWeek; // ExactTarget_WeekOfMonthEnum
-  public $ScheduledDayOfWeek; // ExactTarget_DayOfWeekEnum
+  /**
+   * @var ExactTarget_MonthlyRecurrencePatternTypeEnum $MonthlyRecurrencePatternType
+   */
+  public $MonthlyRecurrencePatternType;
+  /**
+   * @var int $MonthlyInterval
+   */
+  public $MonthlyInterval;
+  /**
+   * @var int $ScheduledDay
+   */
+  public $ScheduledDay;
+  /**
+   * @var ExactTarget_WeekOfMonthEnum $ScheduledWeek
+   */
+  public $ScheduledWeek;
+  /**
+   * @var ExactTarget_DayOfWeekEnum $ScheduledDayOfWeek
+   */
+  public $ScheduledDayOfWeek;
 }
 
 class ExactTarget_YearlyRecurrence {
-  public $YearlyRecurrencePatternType; // ExactTarget_YearlyRecurrencePatternTypeEnum
-  public $ScheduledDay; // int
-  public $ScheduledWeek; // ExactTarget_WeekOfMonthEnum
-  public $ScheduledMonth; // ExactTarget_MonthOfYearEnum
-  public $ScheduledDayOfWeek; // ExactTarget_DayOfWeekEnum
+  /**
+   * @var ExactTarget_YearlyRecurrencePatternTypeEnum $YearlyRecurrencePatternType
+   */
+  public $YearlyRecurrencePatternType;
+  /**
+   * @var int $ScheduledDay
+   */
+  public $ScheduledDay;
+  /**
+   * @var ExactTarget_WeekOfMonthEnum $ScheduledWeek
+   */
+  public $ScheduledWeek;
+  /**
+   * @var ExactTarget_MonthOfYearEnum $ScheduledMonth
+   */
+  public $ScheduledMonth;
+  /**
+   * @var ExactTarget_DayOfWeekEnum $ScheduledDayOfWeek
+   */
+  public $ScheduledDayOfWeek;
 }
 
 class ExactTarget_ExtractRequest {
-  public $Client; // ExactTarget_ClientID
-  public $ID; // string
-  public $Options; // ExactTarget_ExtractOptions
-  public $Parameters; // ExactTarget_Parameters
-  public $Description; // ExactTarget_ExtractDescription
-  public $Definition; // ExactTarget_ExtractDefinition
+  /**
+   * @var ExactTarget_ClientID $Client
+   */
+  public $Client;
+  /**
+   * @var string $ID
+   */
+  public $ID;
+  /**
+   * @var ExactTarget_ExtractOptions $Options
+   */
+  public $Options;
+  /**
+   * @var ExactTarget_Parameters $Parameters
+   */
+  public $Parameters;
+  /**
+   * @var ExactTarget_ExtractDescription $Description
+   */
+  public $Description;
+  /**
+   * @var ExactTarget_ExtractDefinition $Definition
+   */
+  public $Definition;
 }
 
 
 
 class ExactTarget_ExtractResult {
-  public $Request; // ExactTarget_ExtractRequest
+  /**
+   * @var ExactTarget_ExtractRequest $Request
+   */
+  public $Request;
 }
 
 class ExactTarget_ExtractRequestMsg {
-  public $Requests; // ExactTarget_ExtractRequest
+  /**
+   * @var ExactTarget_ExtractRequest $Requests
+   */
+  public $Requests;
 }
 
 class ExactTarget_ExtractResponseMsg {
-  public $OverallStatus; // string
-  public $RequestID; // string
-  public $Results; // ExactTarget_ExtractResult
+  /**
+   * @var string $OverallStatus
+   */
+  public $OverallStatus;
+  /**
+   * @var string $RequestID
+   */
+  public $RequestID;
+  /**
+   * @var ExactTarget_ExtractResult $Results
+   */
+  public $Results;
 }
 
 class ExactTarget_ExtractOptions {
@@ -876,25 +1958,46 @@ class ExactTarget_ExtractParameter {
 }
 
 class ExactTarget_ExtractTemplate {
-  public $Name; // string
-  public $ConfigurationPage; // string
-  public $PackageKey; // string
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $ConfigurationPage
+   */
+  public $ConfigurationPage;
+  /**
+   * @var string $PackageKey
+   */
+  public $PackageKey;
 }
 
 class ExactTarget_ExtractDescription {
-  public $Parameters; // ExactTarget_Parameters
+  /**
+   * @var ExactTarget_Parameters $Parameters
+   */
+  public $Parameters;
 }
 
 
 
 class ExactTarget_ExtractDefinition {
-  public $Parameters; // ExactTarget_Parameters
-  public $Values; // ExactTarget_Values
+  /**
+   * @var ExactTarget_Parameters $Parameters
+   */
+  public $Parameters;
+  /**
+   * @var ExactTarget_Values $Values
+   */
+  public $Values;
 }
 
 
 class ExactTarget_Values {
-  public $Value; // ExactTarget_APIProperty
+  /**
+   * @var ExactTarget_APIProperty $Value
+   */
+  public $Value;
 }
 
 class ExactTarget_ExtractParameterDataType {
@@ -909,86 +2012,254 @@ class ExactTarget_ParameterDescription {
 }
 
 class ExactTarget_ExtractParameterDescription {
-  public $Name; // string
-  public $DataType; // ExactTarget_ExtractParameterDataType
-  public $DefaultValue; // string
-  public $IsOptional; // boolean
-  public $DropDownList; // string
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var ExactTarget_ExtractParameterDataType $DataType
+   */
+  public $DataType;
+  /**
+   * @var string $DefaultValue
+   */
+  public $DefaultValue;
+  /**
+   * @var boolean $IsOptional
+   */
+  public $IsOptional;
+  /**
+   * @var string $DropDownList
+   */
+  public $DropDownList;
 }
 
 class ExactTarget_VersionInfoResponse {
-  public $Version; // string
-  public $VersionDate; // dateTime
-  public $Notes; // string
-  public $VersionHistory; // ExactTarget_VersionInfoResponse
+  /**
+   * @var string $Version
+   */
+  public $Version;
+  /**
+   * @var dateTime $VersionDate
+   */
+  public $VersionDate;
+  /**
+   * @var string $Notes
+   */
+  public $Notes;
+  /**
+   * @var ExactTarget_VersionInfoResponse $VersionHistory
+   */
+  public $VersionHistory;
 }
 
 class ExactTarget_VersionInfoRequestMsg {
-  public $IncludeVersionHistory; // boolean
+  /**
+   * @var boolean $IncludeVersionHistory
+   */
+  public $IncludeVersionHistory;
 }
 
 class ExactTarget_VersionInfoResponseMsg {
-  public $VersionInfo; // ExactTarget_VersionInfoResponse
-  public $RequestID; // string
+  /**
+   * @var ExactTarget_VersionInfoResponse $VersionInfo
+   */
+  public $VersionInfo;
+  /**
+   * @var string $RequestID
+   */
+  public $RequestID;
 }
 
 class ExactTarget_Locale {
-  public $LocaleCode; // string
+  /**
+   * @var string $LocaleCode
+   */
+  public $LocaleCode;
 }
 
 class ExactTarget_TimeZone {
-  public $Name; // string
+  /**
+   * @var string $Name
+   */
+  public $Name;
 }
 
 class ExactTarget_Account {
-  public $AccountType; // ExactTarget_AccountTypeEnum
-  public $ParentID; // int
-  public $BrandID; // int
-  public $PrivateLabelID; // int
-  public $ReportingParentID; // int
-  public $Name; // string
-  public $Email; // string
-  public $FromName; // string
-  public $BusinessName; // string
-  public $Phone; // string
-  public $Address; // string
-  public $Fax; // string
-  public $City; // string
-  public $State; // string
-  public $Zip; // string
-  public $Country; // string
-  public $IsActive; // int
-  public $IsTestAccount; // boolean
-  public $OrgID; // int
-  public $DBID; // int
-  public $ParentName; // string
-  public $CustomerID; // long
-  public $DeletedDate; // dateTime
-  public $EditionID; // int
-  public $Children; // ExactTarget_AccountDataItem
-  public $Subscription; // ExactTarget_Subscription
-  public $PrivateLabels; // ExactTarget_PrivateLabel
-  public $BusinessRules; // ExactTarget_BusinessRule
-  public $AccountUsers; // ExactTarget_AccountUser
-  public $InheritAddress; // boolean
-  public $IsTrialAccount; // boolean
-  public $Locale; // ExactTarget_Locale
-  public $ParentAccount; // ExactTarget_Account
-  public $TimeZone; // ExactTarget_TimeZone
-  public $Roles; // ExactTarget_Roles
-  public $LanguageLocale; // ExactTarget_Locale
+  /**
+   * @var ExactTarget_AccountTypeEnum $AccountType
+   */
+  public $AccountType;
+  /**
+   * @var int $ParentID
+   */
+  public $ParentID;
+  /**
+   * @var int $BrandID
+   */
+  public $BrandID;
+  /**
+   * @var int $PrivateLabelID
+   */
+  public $PrivateLabelID;
+  /**
+   * @var int $ReportingParentID
+   */
+  public $ReportingParentID;
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Email
+   */
+  public $Email;
+  /**
+   * @var string $FromName
+   */
+  public $FromName;
+  /**
+   * @var string $BusinessName
+   */
+  public $BusinessName;
+  /**
+   * @var string $Phone
+   */
+  public $Phone;
+  /**
+   * @var string $Address
+   */
+  public $Address;
+  /**
+   * @var string $Fax
+   */
+  public $Fax;
+  /**
+   * @var string $City
+   */
+  public $City;
+  /**
+   * @var string $State
+   */
+  public $State;
+  /**
+   * @var string $Zip
+   */
+  public $Zip;
+  /**
+   * @var string $Country
+   */
+  public $Country;
+  /**
+   * @var int $IsActive
+   */
+  public $IsActive;
+  /**
+   * @var boolean $IsTestAccount
+   */
+  public $IsTestAccount;
+  /**
+   * @var int $OrgID
+   */
+  public $OrgID;
+  /**
+   * @var int $DBID
+   */
+  public $DBID;
+  /**
+   * @var string $ParentName
+   */
+  public $ParentName;
+  /**
+   * @var long $CustomerID
+   */
+  public $CustomerID;
+  /**
+   * @var dateTime $DeletedDate
+   */
+  public $DeletedDate;
+  /**
+   * @var int $EditionID
+   */
+  public $EditionID;
+  /**
+   * @var ExactTarget_AccountDataItem $Children
+   */
+  public $Children;
+  /**
+   * @var ExactTarget_Subscription $Subscription
+   */
+  public $Subscription;
+  /**
+   * @var ExactTarget_PrivateLabel $PrivateLabels
+   */
+  public $PrivateLabels;
+  /**
+   * @var ExactTarget_BusinessRule $BusinessRules
+   */
+  public $BusinessRules;
+  /**
+   * @var ExactTarget_AccountUser $AccountUsers
+   */
+  public $AccountUsers;
+  /**
+   * @var boolean $InheritAddress
+   */
+  public $InheritAddress;
+  /**
+   * @var boolean $IsTrialAccount
+   */
+  public $IsTrialAccount;
+  /**
+   * @var ExactTarget_Locale $Locale
+   */
+  public $Locale;
+  /**
+   * @var ExactTarget_Account $ParentAccount
+   */
+  public $ParentAccount;
+  /**
+   * @var ExactTarget_TimeZone $TimeZone
+   */
+  public $TimeZone;
+  /**
+   * @var ExactTarget_Roles $Roles
+   */
+  public $Roles;
+  /**
+   * @var ExactTarget_Locale $LanguageLocale
+   */
+  public $LanguageLocale;
 }
 
 class ExactTarget_Roles {
-  public $Role; // ExactTarget_Role
+  /**
+   * @var ExactTarget_Role $Role
+   */
+  public $Role;
 }
 
 class ExactTarget_BusinessUnit {
-  public $Description; // string
-  public $DefaultSendClassification; // ExactTarget_SendClassification
-  public $DefaultHomePage; // ExactTarget_LandingPage
-  public $SubscriberFilter; // ExactTarget_FilterPart
-  public $MasterUnsubscribeBehavior; // ExactTarget_UnsubscribeBehaviorEnum
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var ExactTarget_SendClassification $DefaultSendClassification
+   */
+  public $DefaultSendClassification;
+  /**
+   * @var ExactTarget_LandingPage $DefaultHomePage
+   */
+  public $DefaultHomePage;
+  /**
+   * @var ExactTarget_FilterPart $SubscriberFilter
+   */
+  public $SubscriberFilter;
+  /**
+   * @var ExactTarget_UnsubscribeBehaviorEnum $MasterUnsubscribeBehavior
+   */
+  public $MasterUnsubscribeBehavior;
 }
 
 class ExactTarget_UnsubscribeBehaviorEnum {
@@ -1013,183 +2284,561 @@ class ExactTarget_AccountTypeEnum {
 }
 
 class ExactTarget_AccountDataItem {
-  public $ChildAccountID; // int
-  public $BrandID; // int
-  public $PrivateLabelID; // int
-  public $AccountType; // int
+  /**
+   * @var int $ChildAccountID
+   */
+  public $ChildAccountID;
+  /**
+   * @var int $BrandID
+   */
+  public $BrandID;
+  /**
+   * @var int $PrivateLabelID
+   */
+  public $PrivateLabelID;
+  /**
+   * @var int $AccountType
+   */
+  public $AccountType;
 }
 
 class ExactTarget_Subscription {
-  public $SubscriptionID; // int
-  public $EmailsPurchased; // int
-  public $AccountsPurchased; // int
-  public $AdvAccountsPurchased; // int
-  public $LPAccountsPurchased; // int
-  public $DOTOAccountsPurchased; // int
-  public $BUAccountsPurchased; // int
-  public $BeginDate; // dateTime
-  public $EndDate; // dateTime
-  public $Notes; // string
-  public $Period; // string
-  public $NotificationTitle; // string
-  public $NotificationMessage; // string
-  public $NotificationFlag; // string
-  public $NotificationExpDate; // dateTime
-  public $ForAccounting; // string
-  public $HasPurchasedEmails; // boolean
-  public $ContractNumber; // string
-  public $ContractModifier; // string
-  public $IsRenewal; // boolean
-  public $NumberofEmails; // long
+  /**
+   * @var int $SubscriptionID
+   */
+  public $SubscriptionID;
+  /**
+   * @var int $EmailsPurchased
+   */
+  public $EmailsPurchased;
+  /**
+   * @var int $AccountsPurchased
+   */
+  public $AccountsPurchased;
+  /**
+   * @var int $AdvAccountsPurchased
+   */
+  public $AdvAccountsPurchased;
+  /**
+   * @var int $LPAccountsPurchased
+   */
+  public $LPAccountsPurchased;
+  /**
+   * @var int $DOTOAccountsPurchased
+   */
+  public $DOTOAccountsPurchased;
+  /**
+   * @var int $BUAccountsPurchased
+   */
+  public $BUAccountsPurchased;
+  /**
+   * @var dateTime $BeginDate
+   */
+  public $BeginDate;
+  /**
+   * @var dateTime $EndDate
+   */
+  public $EndDate;
+  /**
+   * @var string $Notes
+   */
+  public $Notes;
+  /**
+   * @var string $Period
+   */
+  public $Period;
+  /**
+   * @var string $NotificationTitle
+   */
+  public $NotificationTitle;
+  /**
+   * @var string $NotificationMessage
+   */
+  public $NotificationMessage;
+  /**
+   * @var string $NotificationFlag
+   */
+  public $NotificationFlag;
+  /**
+   * @var dateTime $NotificationExpDate
+   */
+  public $NotificationExpDate;
+  /**
+   * @var string $ForAccounting
+   */
+  public $ForAccounting;
+  /**
+   * @var boolean $HasPurchasedEmails
+   */
+  public $HasPurchasedEmails;
+  /**
+   * @var string $ContractNumber
+   */
+  public $ContractNumber;
+  /**
+   * @var string $ContractModifier
+   */
+  public $ContractModifier;
+  /**
+   * @var boolean $IsRenewal
+   */
+  public $IsRenewal;
+  /**
+   * @var long $NumberofEmails
+   */
+  public $NumberofEmails;
 }
 
 class ExactTarget_PrivateLabel {
-  public $ID; // int
-  public $Name; // string
-  public $ColorPaletteXML; // string
-  public $LogoFile; // string
-  public $Delete; // int
-  public $SetActive; // boolean
+  /**
+   * @var int $ID
+   */
+  public $ID;
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $ColorPaletteXML
+   */
+  public $ColorPaletteXML;
+  /**
+   * @var string $LogoFile
+   */
+  public $LogoFile;
+  /**
+   * @var int $Delete
+   */
+  public $Delete;
+  /**
+   * @var boolean $SetActive
+   */
+  public $SetActive;
 }
 
 class ExactTarget_AccountPrivateLabel {
-  public $Name; // string
-  public $OwnerMemberID; // int
-  public $ColorPaletteXML; // string
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var int $OwnerMemberID
+   */
+  public $OwnerMemberID;
+  /**
+   * @var string $ColorPaletteXML
+   */
+  public $ColorPaletteXML;
 }
 
 class ExactTarget_BusinessRule {
-  public $MemberBusinessRuleID; // int
-  public $BusinessRuleID; // int
-  public $Data; // int
-  public $Quality; // string
-  public $Name; // string
-  public $Type; // string
-  public $Description; // string
-  public $IsViewable; // boolean
-  public $IsInheritedFromParent; // boolean
-  public $DisplayName; // string
-  public $ProductCode; // string
+  /**
+   * @var int $MemberBusinessRuleID
+   */
+  public $MemberBusinessRuleID;
+  /**
+   * @var int $BusinessRuleID
+   */
+  public $BusinessRuleID;
+  /**
+   * @var int $Data
+   */
+  public $Data;
+  /**
+   * @var string $Quality
+   */
+  public $Quality;
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Type
+   */
+  public $Type;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var boolean $IsViewable
+   */
+  public $IsViewable;
+  /**
+   * @var boolean $IsInheritedFromParent
+   */
+  public $IsInheritedFromParent;
+  /**
+   * @var string $DisplayName
+   */
+  public $DisplayName;
+  /**
+   * @var string $ProductCode
+   */
+  public $ProductCode;
 }
 
 class ExactTarget_AccountUser {
-  public $AccountUserID; // int
-  public $UserID; // string
-  public $Password; // string
-  public $Name; // string
-  public $Email; // string
-  public $MustChangePassword; // boolean
-  public $ActiveFlag; // boolean
-  public $ChallengePhrase; // string
-  public $ChallengeAnswer; // string
-  public $UserPermissions; // ExactTarget_UserAccess
-  public $Delete; // int
-  public $LastSuccessfulLogin; // dateTime
-  public $IsAPIUser; // boolean
-  public $NotificationEmailAddress; // string
-  public $IsLocked; // boolean
-  public $Unlock; // boolean
-  public $BusinessUnit; // int
-  public $DefaultBusinessUnit; // int
-  public $Locale; // ExactTarget_Locale
-  public $TimeZone; // ExactTarget_TimeZone
-  public $DefaultBusinessUnitObject; // ExactTarget_BusinessUnit
-  public $AssociatedBusinessUnits; // ExactTarget_AssociatedBusinessUnits
-  public $Roles; // ExactTarget_Roles
-  public $LanguageLocale; // ExactTarget_Locale
+  /**
+   * @var int $AccountUserID
+   */
+  public $AccountUserID;
+  /**
+   * @var string $UserID
+   */
+  public $UserID;
+  /**
+   * @var string $Password
+   */
+  public $Password;
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Email
+   */
+  public $Email;
+  /**
+   * @var boolean $MustChangePassword
+   */
+  public $MustChangePassword;
+  /**
+   * @var boolean $ActiveFlag
+   */
+  public $ActiveFlag;
+  /**
+   * @var string $ChallengePhrase
+   */
+  public $ChallengePhrase;
+  /**
+   * @var string $ChallengeAnswer
+   */
+  public $ChallengeAnswer;
+  /**
+   * @var ExactTarget_UserAccess $UserPermissions
+   */
+  public $UserPermissions;
+  /**
+   * @var int $Delete
+   */
+  public $Delete;
+  /**
+   * @var dateTime $LastSuccessfulLogin
+   */
+  public $LastSuccessfulLogin;
+  /**
+   * @var boolean $IsAPIUser
+   */
+  public $IsAPIUser;
+  /**
+   * @var string $NotificationEmailAddress
+   */
+  public $NotificationEmailAddress;
+  /**
+   * @var boolean $IsLocked
+   */
+  public $IsLocked;
+  /**
+   * @var boolean $Unlock
+   */
+  public $Unlock;
+  /**
+   * @var int $BusinessUnit
+   */
+  public $BusinessUnit;
+  /**
+   * @var int $DefaultBusinessUnit
+   */
+  public $DefaultBusinessUnit;
+  /**
+   * @var ExactTarget_Locale $Locale
+   */
+  public $Locale;
+  /**
+   * @var ExactTarget_TimeZone $TimeZone
+   */
+  public $TimeZone;
+  /**
+   * @var ExactTarget_BusinessUnit $DefaultBusinessUnitObject
+   */
+  public $DefaultBusinessUnitObject;
+  /**
+   * @var ExactTarget_AssociatedBusinessUnits $AssociatedBusinessUnits
+   */
+  public $AssociatedBusinessUnits;
+  /**
+   * @var ExactTarget_Roles $Roles
+   */
+  public $Roles;
+  /**
+   * @var ExactTarget_Locale $LanguageLocale
+   */
+  public $LanguageLocale;
 }
 
 class ExactTarget_AssociatedBusinessUnits {
-  public $BusinessUnit; // ExactTarget_BusinessUnit
+  /**
+   * @var ExactTarget_BusinessUnit $BusinessUnit
+   */
+  public $BusinessUnit;
 }
 
 
 class ExactTarget_UserAccess {
-  public $Name; // string
-  public $Value; // string
-  public $Description; // string
-  public $Delete; // int
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Value
+   */
+  public $Value;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var int $Delete
+   */
+  public $Delete;
 }
 
 class ExactTarget_Brand {
-  public $BrandID; // int
-  public $Label; // string
-  public $Comment; // string
-  public $BrandTags; // ExactTarget_BrandTag
+  /**
+   * @var int $BrandID
+   */
+  public $BrandID;
+  /**
+   * @var string $Label
+   */
+  public $Label;
+  /**
+   * @var string $Comment
+   */
+  public $Comment;
+  /**
+   * @var ExactTarget_BrandTag $BrandTags
+   */
+  public $BrandTags;
 }
 
 class ExactTarget_BrandTag {
-  public $BrandID; // int
-  public $Label; // string
-  public $Data; // string
+  /**
+   * @var int $BrandID
+   */
+  public $BrandID;
+  /**
+   * @var string $Label
+   */
+  public $Label;
+  /**
+   * @var string $Data
+   */
+  public $Data;
 }
 
 class ExactTarget_Role {
-  public $Name; // string
-  public $Description; // string
-  public $IsPrivate; // boolean
-  public $IsSystemDefined; // boolean
-  public $ForceInheritance; // boolean
-  public $PermissionSets; // ExactTarget_PermissionSets
-  public $Permissions; // ExactTarget_Permissions
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var boolean $IsPrivate
+   */
+  public $IsPrivate;
+  /**
+   * @var boolean $IsSystemDefined
+   */
+  public $IsSystemDefined;
+  /**
+   * @var boolean $ForceInheritance
+   */
+  public $ForceInheritance;
+  /**
+   * @var ExactTarget_PermissionSets $PermissionSets
+   */
+  public $PermissionSets;
+  /**
+   * @var ExactTarget_Permissions $Permissions
+   */
+  public $Permissions;
 }
 
 class ExactTarget_PermissionSets {
-  public $PermissionSet; // ExactTarget_PermissionSet
+  /**
+   * @var ExactTarget_PermissionSet $PermissionSet
+   */
+  public $PermissionSet;
 }
 
 class ExactTarget_Permissions {
-  public $Permission; // ExactTarget_Permission
+  /**
+   * @var ExactTarget_Permission $Permission
+   */
+  public $Permission;
 }
 
 class ExactTarget_PermissionSet {
-  public $Name; // string
-  public $Description; // string
-  public $IsAllowed; // boolean
-  public $IsDenied; // boolean
-  public $PermissionSets; // ExactTarget_PermissionSets
-  public $Permissions; // ExactTarget_Permissions
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var boolean $IsAllowed
+   */
+  public $IsAllowed;
+  /**
+   * @var boolean $IsDenied
+   */
+  public $IsDenied;
+  /**
+   * @var ExactTarget_PermissionSets $PermissionSets
+   */
+  public $PermissionSets;
+  /**
+   * @var ExactTarget_Permissions $Permissions
+   */
+  public $Permissions;
 }
 
 
 
 class ExactTarget_Permission {
-  public $Name; // string
-  public $Description; // string
-  public $ObjectType; // string
-  public $Operation; // string
-  public $IsShareable; // boolean
-  public $IsAllowed; // boolean
-  public $IsDenied; // boolean
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var string $ObjectType
+   */
+  public $ObjectType;
+  /**
+   * @var string $Operation
+   */
+  public $Operation;
+  /**
+   * @var boolean $IsShareable
+   */
+  public $IsShareable;
+  /**
+   * @var boolean $IsAllowed
+   */
+  public $IsAllowed;
+  /**
+   * @var boolean $IsDenied
+   */
+  public $IsDenied;
 }
 
 class ExactTarget_Email {
-  public $Name; // string
-  public $Folder; // string
-  public $CategoryID; // int
-  public $HTMLBody; // string
-  public $TextBody; // string
-  public $ContentAreas; // ExactTarget_ContentArea
-  public $Subject; // string
-  public $IsActive; // boolean
-  public $IsHTMLPaste; // boolean
-  public $ClonedFromID; // int
-  public $Status; // string
-  public $EmailType; // string
-  public $CharacterSet; // string
-  public $HasDynamicSubjectLine; // boolean
-  public $ContentCheckStatus; // string
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Folder
+   */
+  public $Folder;
+  /**
+   * @var int $CategoryID
+   */
+  public $CategoryID;
+  /**
+   * @var string $HTMLBody
+   */
+  public $HTMLBody;
+  /**
+   * @var string $TextBody
+   */
+  public $TextBody;
+  /**
+   * @var ExactTarget_ContentArea $ContentAreas
+   */
+  public $ContentAreas;
+  /**
+   * @var string $Subject
+   */
+  public $Subject;
+  /**
+   * @var boolean $IsActive
+   */
+  public $IsActive;
+  /**
+   * @var boolean $IsHTMLPaste
+   */
+  public $IsHTMLPaste;
+  /**
+   * @var int $ClonedFromID
+   */
+  public $ClonedFromID;
+  /**
+   * @var string $Status
+   */
+  public $Status;
+  /**
+   * @var string $EmailType
+   */
+  public $EmailType;
+  /**
+   * @var string $CharacterSet
+   */
+  public $CharacterSet;
+  /**
+   * @var boolean $HasDynamicSubjectLine
+   */
+  public $HasDynamicSubjectLine;
+  /**
+   * @var string $ContentCheckStatus
+   */
+  public $ContentCheckStatus;
 }
 
 class ExactTarget_ContentArea {
-  public $Key; // string
-  public $Content; // string
-  public $IsBlank; // boolean
-  public $CategoryID; // int
-  public $Name; // string
-  public $Layout; // ExactTarget_LayoutType
-  public $IsDynamicContent; // boolean
-  public $IsSurvey; // boolean
+  /**
+   * @var string $Key
+   */
+  public $Key;
+  /**
+   * @var string $Content
+   */
+  public $Content;
+  /**
+   * @var boolean $IsBlank
+   */
+  public $IsBlank;
+  /**
+   * @var int $CategoryID
+   */
+  public $CategoryID;
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var ExactTarget_LayoutType $Layout
+   */
+  public $Layout;
+  /**
+   * @var boolean $IsDynamicContent
+   */
+  public $IsDynamicContent;
+  /**
+   * @var boolean $IsSurvey
+   */
+  public $IsSurvey;
 }
 
 class ExactTarget_LayoutType {
@@ -1199,16 +2848,37 @@ class ExactTarget_LayoutType {
 }
 
 class ExactTarget_Message {
-  public $TextBody; // string
+  /**
+   * @var string $TextBody
+   */
+  public $TextBody;
 }
 
 class ExactTarget_TrackingEvent {
-  public $SendID; // int
-  public $SubscriberKey; // string
-  public $EventDate; // dateTime
-  public $EventType; // ExactTarget_EventType
-  public $TriggeredSendDefinitionObjectID; // string
-  public $BatchID; // int
+  /**
+   * @var int $SendID
+   */
+  public $SendID;
+  /**
+   * @var string $SubscriberKey
+   */
+  public $SubscriberKey;
+  /**
+   * @var dateTime $EventDate
+   */
+  public $EventDate;
+  /**
+   * @var ExactTarget_EventType $EventType
+   */
+  public $EventType;
+  /**
+   * @var string $TriggeredSendDefinitionObjectID
+   */
+  public $TriggeredSendDefinitionObjectID;
+  /**
+   * @var int $BatchID
+   */
+  public $BatchID;
 }
 
 class ExactTarget_EventType {
@@ -1229,18 +2899,36 @@ class ExactTarget_OpenEvent {
 }
 
 class ExactTarget_BounceEvent {
-  public $SMTPCode; // string
-  public $BounceCategory; // string
-  public $SMTPReason; // string
-  public $BounceType; // string
+  /**
+   * @var string $SMTPCode
+   */
+  public $SMTPCode;
+  /**
+   * @var string $BounceCategory
+   */
+  public $BounceCategory;
+  /**
+   * @var string $SMTPReason
+   */
+  public $SMTPReason;
+  /**
+   * @var string $BounceType
+   */
+  public $BounceType;
 }
 
 class ExactTarget_UnsubEvent {
 }
 
 class ExactTarget_ClickEvent {
-  public $URLID; // int
-  public $URL; // string
+  /**
+   * @var int $URLID
+   */
+  public $URLID;
+  /**
+   * @var string $URL
+   */
+  public $URL;
 }
 
 class ExactTarget_SentEvent {
@@ -1250,48 +2938,120 @@ class ExactTarget_NotSentEvent {
 }
 
 class ExactTarget_SurveyEvent {
-  public $Question; // string
-  public $Answer; // string
+  /**
+   * @var string $Question
+   */
+  public $Question;
+  /**
+   * @var string $Answer
+   */
+  public $Answer;
 }
 
 class ExactTarget_ForwardedEmailEvent {
 }
 
 class ExactTarget_ForwardedEmailOptInEvent {
-  public $OptInSubscriberKey; // string
+  /**
+   * @var string $OptInSubscriberKey
+   */
+  public $OptInSubscriberKey;
 }
 
 class ExactTarget_Subscriber {
-  public $EmailAddress; // string
-  public $Attributes; // ExactTarget_Attribute
-  public $SubscriberKey; // string
-  public $UnsubscribedDate; // dateTime
-  public $Status; // ExactTarget_SubscriberStatus
-  public $PartnerType; // string
-  public $EmailTypePreference; // ExactTarget_EmailType
-  public $Lists; // ExactTarget_SubscriberList
-  public $GlobalUnsubscribeCategory; // ExactTarget_GlobalUnsubscribeCategory
-  public $SubscriberTypeDefinition; // ExactTarget_SubscriberTypeDefinition
-  public $Addresses; // ExactTarget_Addresses
-  public $PrimarySMSAddress; // ExactTarget_SMSAddress
-  public $PrimarySMSPublicationStatus; // ExactTarget_SubscriberAddressStatus
-  public $PrimaryEmailAddress; // ExactTarget_EmailAddress
-  public $Locale; // ExactTarget_Locale
+  /**
+   * @var string $EmailAddress
+   */
+  public $EmailAddress;
+  /**
+   * @var ExactTarget_Attribute $Attributes
+   */
+  public $Attributes;
+  /**
+   * @var string $SubscriberKey
+   */
+  public $SubscriberKey;
+  /**
+   * @var dateTime $UnsubscribedDate
+   */
+  public $UnsubscribedDate;
+  /**
+   * @var ExactTarget_SubscriberStatus $Status
+   */
+  public $Status;
+  /**
+   * @var string $PartnerType
+   */
+  public $PartnerType;
+  /**
+   * @var ExactTarget_EmailType $EmailTypePreference
+   */
+  public $EmailTypePreference;
+  /**
+   * @var ExactTarget_SubscriberList $Lists
+   */
+  public $Lists;
+  /**
+   * @var ExactTarget_GlobalUnsubscribeCategory $GlobalUnsubscribeCategory
+   */
+  public $GlobalUnsubscribeCategory;
+  /**
+   * @var ExactTarget_SubscriberTypeDefinition $SubscriberTypeDefinition
+   */
+  public $SubscriberTypeDefinition;
+  /**
+   * @var ExactTarget_Addresses $Addresses
+   */
+  public $Addresses;
+  /**
+   * @var ExactTarget_SMSAddress $PrimarySMSAddress
+   */
+  public $PrimarySMSAddress;
+  /**
+   * @var ExactTarget_SubscriberAddressStatus $PrimarySMSPublicationStatus
+   */
+  public $PrimarySMSPublicationStatus;
+  /**
+   * @var ExactTarget_EmailAddress $PrimaryEmailAddress
+   */
+  public $PrimaryEmailAddress;
+  /**
+   * @var ExactTarget_Locale $Locale
+   */
+  public $Locale;
 }
 
 class ExactTarget_Addresses {
-  public $Address; // ExactTarget_SubscriberAddress
+  /**
+   * @var ExactTarget_SubscriberAddress $Address
+   */
+  public $Address;
 }
 
 class ExactTarget_Attribute {
-  public $Name; // string
-  public $Value; // string
-  public $Compression; // ExactTarget_CompressionConfiguration
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Value
+   */
+  public $Value;
+  /**
+   * @var ExactTarget_CompressionConfiguration $Compression
+   */
+  public $Compression;
 }
 
 class ExactTarget_CompressionConfiguration {
-  public $Type; // ExactTarget_CompressionType
-  public $Encoding; // ExactTarget_CompressionEncoding
+  /**
+   * @var ExactTarget_CompressionType $Type
+   */
+  public $Type;
+  /**
+   * @var ExactTarget_CompressionEncoding $Encoding
+   */
+  public $Encoding;
 }
 
 class ExactTarget_CompressionType {
@@ -1311,7 +3071,10 @@ class ExactTarget_SubscriberStatus {
 }
 
 class ExactTarget_SubscriberTypeDefinition {
-  public $SubscriberType; // string
+  /**
+   * @var string $SubscriberType
+   */
+  public $SubscriberType;
 }
 
 class ExactTarget_EmailType {
@@ -1320,27 +3083,72 @@ class ExactTarget_EmailType {
 }
 
 class ExactTarget_ListSubscriber {
-  public $Status; // ExactTarget_SubscriberStatus
-  public $ListID; // int
-  public $SubscriberKey; // string
+  /**
+   * @var ExactTarget_SubscriberStatus $Status
+   */
+  public $Status;
+  /**
+   * @var int $ListID
+   */
+  public $ListID;
+  /**
+   * @var string $SubscriberKey
+   */
+  public $SubscriberKey;
 }
 
 class ExactTarget_SubscriberList {
-  public $Status; // ExactTarget_SubscriberStatus
-  public $List; // ExactTarget_List
-  public $Action; // string
-  public $Subscriber; // ExactTarget_Subscriber
+  /**
+   * @var ExactTarget_SubscriberStatus $Status
+   */
+  public $Status;
+  /**
+   * @var ExactTarget_List $List
+   */
+  public $List;
+  /**
+   * @var string $Action
+   */
+  public $Action;
+  /**
+   * @var ExactTarget_Subscriber $Subscriber
+   */
+  public $Subscriber;
 }
 
 class ExactTarget_List {
-  public $ListName; // string
-  public $Category; // int
-  public $Type; // ExactTarget_ListTypeEnum
-  public $Description; // string
-  public $Subscribers; // ExactTarget_Subscriber
-  public $ListClassification; // ExactTarget_ListClassificationEnum
-  public $AutomatedEmail; // ExactTarget_Email
-  public $SendClassification; // ExactTarget_SendClassification
+  /**
+   * @var string $ListName
+   */
+  public $ListName;
+  /**
+   * @var int $Category
+   */
+  public $Category;
+  /**
+   * @var ExactTarget_ListTypeEnum $Type
+   */
+  public $Type;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var ExactTarget_Subscriber $Subscribers
+   */
+  public $Subscribers;
+  /**
+   * @var ExactTarget_ListClassificationEnum $ListClassification
+   */
+  public $ListClassification;
+  /**
+   * @var ExactTarget_Email $AutomatedEmail
+   */
+  public $AutomatedEmail;
+  /**
+   * @var ExactTarget_SendClassification $SendClassification
+   */
+  public $SendClassification;
 }
 
 class ExactTarget_ListTypeEnum {
@@ -1358,10 +3166,22 @@ class ExactTarget_ListClassificationEnum {
 }
 
 class ExactTarget_Group {
-  public $Name; // string
-  public $Category; // int
-  public $Description; // string
-  public $Subscribers; // ExactTarget_Subscriber
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var int $Category
+   */
+  public $Category;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var ExactTarget_Subscriber $Subscribers
+   */
+  public $Subscribers;
 }
 
 class ExactTarget_OverrideType {
@@ -1379,142 +3199,469 @@ class ExactTarget_ListAttributeFieldType {
 }
 
 class ExactTarget_ListAttribute {
-  public $List; // ExactTarget_List
-  public $Name; // string
-  public $Description; // string
-  public $FieldType; // ExactTarget_ListAttributeFieldType
-  public $FieldLength; // int
-  public $Scale; // int
-  public $MinValue; // string
-  public $MaxValue; // string
-  public $DefaultValue; // string
-  public $IsNullable; // boolean
-  public $IsHidden; // boolean
-  public $IsReadOnly; // boolean
-  public $Inheritable; // boolean
-  public $Overridable; // boolean
-  public $MustOverride; // boolean
-  public $OverrideType; // ExactTarget_OverrideType
-  public $Ordinal; // int
-  public $RestrictedValues; // ExactTarget_ListAttributeRestrictedValue
-  public $BaseAttribute; // ExactTarget_ListAttribute
+  /**
+   * @var ExactTarget_List $List
+   */
+  public $List;
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var ExactTarget_ListAttributeFieldType $FieldType
+   */
+  public $FieldType;
+  /**
+   * @var int $FieldLength
+   */
+  public $FieldLength;
+  /**
+   * @var int $Scale
+   */
+  public $Scale;
+  /**
+   * @var string $MinValue
+   */
+  public $MinValue;
+  /**
+   * @var string $MaxValue
+   */
+  public $MaxValue;
+  /**
+   * @var string $DefaultValue
+   */
+  public $DefaultValue;
+  /**
+   * @var boolean $IsNullable
+   */
+  public $IsNullable;
+  /**
+   * @var boolean $IsHidden
+   */
+  public $IsHidden;
+  /**
+   * @var boolean $IsReadOnly
+   */
+  public $IsReadOnly;
+  /**
+   * @var boolean $Inheritable
+   */
+  public $Inheritable;
+  /**
+   * @var boolean $Overridable
+   */
+  public $Overridable;
+  /**
+   * @var boolean $MustOverride
+   */
+  public $MustOverride;
+  /**
+   * @var ExactTarget_OverrideType $OverrideType
+   */
+  public $OverrideType;
+  /**
+   * @var int $Ordinal
+   */
+  public $Ordinal;
+  /**
+   * @var ExactTarget_ListAttributeRestrictedValue $RestrictedValues
+   */
+  public $RestrictedValues;
+  /**
+   * @var ExactTarget_ListAttribute $BaseAttribute
+   */
+  public $BaseAttribute;
 }
 
 class ExactTarget_ListAttributeRestrictedValue {
-  public $ValueName; // string
-  public $IsDefault; // boolean
-  public $DisplayOrder; // int
-  public $Description; // string
+  /**
+   * @var string $ValueName
+   */
+  public $ValueName;
+  /**
+   * @var boolean $IsDefault
+   */
+  public $IsDefault;
+  /**
+   * @var int $DisplayOrder
+   */
+  public $DisplayOrder;
+  /**
+   * @var string $Description
+   */
+  public $Description;
 }
 
 class ExactTarget_GlobalUnsubscribeCategory {
-  public $Name; // string
-  public $IgnorableByPartners; // boolean
-  public $Ignore; // boolean
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var boolean $IgnorableByPartners
+   */
+  public $IgnorableByPartners;
+  /**
+   * @var boolean $Ignore
+   */
+  public $Ignore;
 }
 
 class ExactTarget_Campaign {
 }
 
 class ExactTarget_Send {
-  public $Email; // ExactTarget_Email
-  public $List; // ExactTarget_List
-  public $SendDate; // dateTime
-  public $FromAddress; // string
-  public $FromName; // string
-  public $Duplicates; // int
-  public $InvalidAddresses; // int
-  public $ExistingUndeliverables; // int
-  public $ExistingUnsubscribes; // int
-  public $HardBounces; // int
-  public $SoftBounces; // int
-  public $OtherBounces; // int
-  public $ForwardedEmails; // int
-  public $UniqueClicks; // int
-  public $UniqueOpens; // int
-  public $NumberSent; // int
-  public $NumberDelivered; // int
-  public $Unsubscribes; // int
-  public $MissingAddresses; // int
-  public $Subject; // string
-  public $PreviewURL; // string
-  public $Links; // ExactTarget_Link
-  public $Events; // ExactTarget_TrackingEvent
-  public $SentDate; // dateTime
-  public $EmailName; // string
-  public $Status; // string
-  public $IsMultipart; // boolean
-  public $SendLimit; // int
-  public $SendWindowOpen; // time
-  public $SendWindowClose; // time
-  public $IsAlwaysOn; // boolean
-  public $Sources; // ExactTarget_Sources
-  public $NumberTargeted; // int
-  public $NumberErrored; // int
-  public $NumberExcluded; // int
-  public $Additional; // string
-  public $BccEmail; // string
-  public $EmailSendDefinition; // ExactTarget_EmailSendDefinition
-  public $SuppressionLists; // ExactTarget_SuppressionLists
+  /**
+   * @var ExactTarget_Email $Email
+   */
+  public $Email;
+  /**
+   * @var ExactTarget_List $List
+   */
+  public $List;
+  /**
+   * @var dateTime $SendDate
+   */
+  public $SendDate;
+  /**
+   * @var string $FromAddress
+   */
+  public $FromAddress;
+  /**
+   * @var string $FromName
+   */
+  public $FromName;
+  /**
+   * @var int $Duplicates
+   */
+  public $Duplicates;
+  /**
+   * @var int $InvalidAddresses
+   */
+  public $InvalidAddresses;
+  /**
+   * @var int $ExistingUndeliverables
+   */
+  public $ExistingUndeliverables;
+  /**
+   * @var int $ExistingUnsubscribes
+   */
+  public $ExistingUnsubscribes;
+  /**
+   * @var int $HardBounces
+   */
+  public $HardBounces;
+  /**
+   * @var int $SoftBounces
+   */
+  public $SoftBounces;
+  /**
+   * @var int $OtherBounces
+   */
+  public $OtherBounces;
+  /**
+   * @var int $ForwardedEmails
+   */
+  public $ForwardedEmails;
+  /**
+   * @var int $UniqueClicks
+   */
+  public $UniqueClicks;
+  /**
+   * @var int $UniqueOpens
+   */
+  public $UniqueOpens;
+  /**
+   * @var int $NumberSent
+   */
+  public $NumberSent;
+  /**
+   * @var int $NumberDelivered
+   */
+  public $NumberDelivered;
+  /**
+   * @var int $Unsubscribes
+   */
+  public $Unsubscribes;
+  /**
+   * @var int $MissingAddresses
+   */
+  public $MissingAddresses;
+  /**
+   * @var string $Subject
+   */
+  public $Subject;
+  /**
+   * @var string $PreviewURL
+   */
+  public $PreviewURL;
+  /**
+   * @var ExactTarget_Link $Links
+   */
+  public $Links;
+  /**
+   * @var ExactTarget_TrackingEvent $Events
+   */
+  public $Events;
+  /**
+   * @var dateTime $SentDate
+   */
+  public $SentDate;
+  /**
+   * @var string $EmailName
+   */
+  public $EmailName;
+  /**
+   * @var string $Status
+   */
+  public $Status;
+  /**
+   * @var boolean $IsMultipart
+   */
+  public $IsMultipart;
+  /**
+   * @var int $SendLimit
+   */
+  public $SendLimit;
+  /**
+   * @var time $SendWindowOpen
+   */
+  public $SendWindowOpen;
+  /**
+   * @var time $SendWindowClose
+   */
+  public $SendWindowClose;
+  /**
+   * @var boolean $IsAlwaysOn
+   */
+  public $IsAlwaysOn;
+  /**
+   * @var ExactTarget_Sources $Sources
+   */
+  public $Sources;
+  /**
+   * @var int $NumberTargeted
+   */
+  public $NumberTargeted;
+  /**
+   * @var int $NumberErrored
+   */
+  public $NumberErrored;
+  /**
+   * @var int $NumberExcluded
+   */
+  public $NumberExcluded;
+  /**
+   * @var string $Additional
+   */
+  public $Additional;
+  /**
+   * @var string $BccEmail
+   */
+  public $BccEmail;
+  /**
+   * @var ExactTarget_EmailSendDefinition $EmailSendDefinition
+   */
+  public $EmailSendDefinition;
+  /**
+   * @var ExactTarget_SuppressionLists $SuppressionLists
+   */
+  public $SuppressionLists;
 }
 
 class ExactTarget_Sources {
-  public $Source; // ExactTarget_APIObject
+  /**
+   * @var ExactTarget_APIObject $Source
+   */
+  public $Source;
 }
 
 class ExactTarget_SuppressionLists {
-  public $SuppressionList; // ExactTarget_AudienceItem
+  /**
+   * @var ExactTarget_AudienceItem $SuppressionList
+   */
+  public $SuppressionList;
 }
 
 class ExactTarget_Link {
-  public $LastClicked; // dateTime
-  public $Alias; // string
-  public $TotalClicks; // int
-  public $UniqueClicks; // int
-  public $URL; // string
-  public $Subscribers; // ExactTarget_TrackingEvent
+  /**
+   * @var dateTime $LastClicked
+   */
+  public $LastClicked;
+  /**
+   * @var string $Alias
+   */
+  public $Alias;
+  /**
+   * @var int $TotalClicks
+   */
+  public $TotalClicks;
+  /**
+   * @var int $UniqueClicks
+   */
+  public $UniqueClicks;
+  /**
+   * @var string $URL
+   */
+  public $URL;
+  /**
+   * @var ExactTarget_TrackingEvent $Subscribers
+   */
+  public $Subscribers;
 }
 
 class ExactTarget_SendSummary {
-  public $AccountID; // int
-  public $AccountName; // string
-  public $AccountEmail; // string
-  public $IsTestAccount; // boolean
-  public $SendID; // int
-  public $DeliveredTime; // string
-  public $TotalSent; // int
-  public $Transactional; // int
-  public $NonTransactional; // int
+  /**
+   * @var int $AccountID
+   */
+  public $AccountID;
+  /**
+   * @var string $AccountName
+   */
+  public $AccountName;
+  /**
+   * @var string $AccountEmail
+   */
+  public $AccountEmail;
+  /**
+   * @var boolean $IsTestAccount
+   */
+  public $IsTestAccount;
+  /**
+   * @var int $SendID
+   */
+  public $SendID;
+  /**
+   * @var string $DeliveredTime
+   */
+  public $DeliveredTime;
+  /**
+   * @var int $TotalSent
+   */
+  public $TotalSent;
+  /**
+   * @var int $Transactional
+   */
+  public $Transactional;
+  /**
+   * @var int $NonTransactional
+   */
+  public $NonTransactional;
 }
 
 class ExactTarget_TriggeredSendDefinition {
-  public $TriggeredSendType; // ExactTarget_TriggeredSendTypeEnum
-  public $TriggeredSendStatus; // ExactTarget_TriggeredSendStatusEnum
-  public $Email; // ExactTarget_Email
-  public $List; // ExactTarget_List
-  public $AutoAddSubscribers; // boolean
-  public $AutoUpdateSubscribers; // boolean
-  public $BatchInterval; // int
-  public $BccEmail; // string
-  public $EmailSubject; // string
-  public $DynamicEmailSubject; // string
-  public $IsMultipart; // boolean
-  public $IsWrapped; // boolean
-  public $AllowedSlots; // short
-  public $NewSlotTrigger; // int
-  public $SendLimit; // int
-  public $SendWindowOpen; // time
-  public $SendWindowClose; // time
-  public $SendWindowDelete; // boolean
-  public $RefreshContent; // boolean
-  public $ExclusionFilter; // string
-  public $Priority; // string
-  public $SendSourceCustomerKey; // string
-  public $ExclusionListCollection; // ExactTarget_TriggeredSendExclusionList
-  public $CCEmail; // string
-  public $SendSourceDataExtension; // ExactTarget_DataExtension
-  public $IsAlwaysOn; // boolean
-  public $DisableOnEmailBuildError; // boolean
+  /**
+   * @var ExactTarget_TriggeredSendTypeEnum $TriggeredSendType
+   */
+  public $TriggeredSendType;
+  /**
+   * @var ExactTarget_TriggeredSendStatusEnum $TriggeredSendStatus
+   */
+  public $TriggeredSendStatus;
+  /**
+   * @var ExactTarget_Email $Email
+   */
+  public $Email;
+  /**
+   * @var ExactTarget_List $List
+   */
+  public $List;
+  /**
+   * @var boolean $AutoAddSubscribers
+   */
+  public $AutoAddSubscribers;
+  /**
+   * @var boolean $AutoUpdateSubscribers
+   */
+  public $AutoUpdateSubscribers;
+  /**
+   * @var int $BatchInterval
+   */
+  public $BatchInterval;
+  /**
+   * @var string $BccEmail
+   */
+  public $BccEmail;
+  /**
+   * @var string $EmailSubject
+   */
+  public $EmailSubject;
+  /**
+   * @var string $DynamicEmailSubject
+   */
+  public $DynamicEmailSubject;
+  /**
+   * @var boolean $IsMultipart
+   */
+  public $IsMultipart;
+  /**
+   * @var boolean $IsWrapped
+   */
+  public $IsWrapped;
+  /**
+   * @var short $AllowedSlots
+   */
+  public $AllowedSlots;
+  /**
+   * @var int $NewSlotTrigger
+   */
+  public $NewSlotTrigger;
+  /**
+   * @var int $SendLimit
+   */
+  public $SendLimit;
+  /**
+   * @var time $SendWindowOpen
+   */
+  public $SendWindowOpen;
+  /**
+   * @var time $SendWindowClose
+   */
+  public $SendWindowClose;
+  /**
+   * @var boolean $SendWindowDelete
+   */
+  public $SendWindowDelete;
+  /**
+   * @var boolean $RefreshContent
+   */
+  public $RefreshContent;
+  /**
+   * @var string $ExclusionFilter
+   */
+  public $ExclusionFilter;
+  /**
+   * @var string $Priority
+   */
+  public $Priority;
+  /**
+   * @var string $SendSourceCustomerKey
+   */
+  public $SendSourceCustomerKey;
+  /**
+   * @var ExactTarget_TriggeredSendExclusionList $ExclusionListCollection
+   */
+  public $ExclusionListCollection;
+  /**
+   * @var string $CCEmail
+   */
+  public $CCEmail;
+  /**
+   * @var ExactTarget_DataExtension $SendSourceDataExtension
+   */
+  public $SendSourceDataExtension;
+  /**
+   * @var boolean $IsAlwaysOn
+   */
+  public $IsAlwaysOn;
+  /**
+   * @var boolean $DisableOnEmailBuildError
+   */
+  public $DisableOnEmailBuildError;
 }
 
 class ExactTarget_TriggeredSendExclusionList {
@@ -1536,107 +3683,320 @@ class ExactTarget_TriggeredSendStatusEnum {
 }
 
 class ExactTarget_TriggeredSend {
-  public $TriggeredSendDefinition; // ExactTarget_TriggeredSendDefinition
-  public $Subscribers; // ExactTarget_Subscriber
-  public $Attributes; // ExactTarget_Attribute
+  /**
+   * @var ExactTarget_TriggeredSendDefinition $TriggeredSendDefinition
+   */
+  public $TriggeredSendDefinition;
+  /**
+   * @var ExactTarget_Subscriber $Subscribers
+   */
+  public $Subscribers;
+  /**
+   * @var ExactTarget_Attribute $Attributes
+   */
+  public $Attributes;
 }
 
 class ExactTarget_TriggeredSendCreateResult {
-  public $SubscriberFailures; // ExactTarget_SubscriberResult
+  /**
+   * @var ExactTarget_SubscriberResult $SubscriberFailures
+   */
+  public $SubscriberFailures;
 }
 
 class ExactTarget_SubscriberResult {
-  public $Subscriber; // ExactTarget_Subscriber
-  public $ErrorCode; // string
-  public $ErrorDescription; // string
-  public $Ordinal; // int
+  /**
+   * @var ExactTarget_Subscriber $Subscriber
+   */
+  public $Subscriber;
+  /**
+   * @var string $ErrorCode
+   */
+  public $ErrorCode;
+  /**
+   * @var string $ErrorDescription
+   */
+  public $ErrorDescription;
+  /**
+   * @var int $Ordinal
+   */
+  public $Ordinal;
 }
 
 class ExactTarget_SubscriberSendResult {
-  public $Send; // ExactTarget_Send
-  public $Email; // ExactTarget_Email
-  public $Subscriber; // ExactTarget_Subscriber
-  public $ClickDate; // dateTime
-  public $BounceDate; // dateTime
-  public $OpenDate; // dateTime
-  public $SentDate; // dateTime
-  public $LastAction; // string
-  public $UnsubscribeDate; // dateTime
-  public $FromAddress; // string
-  public $FromName; // string
-  public $TotalClicks; // int
-  public $UniqueClicks; // int
-  public $Subject; // string
-  public $ViewSentEmailURL; // string
-  public $HardBounces; // int
-  public $SoftBounces; // int
-  public $OtherBounces; // int
+  /**
+   * @var ExactTarget_Send $Send
+   */
+  public $Send;
+  /**
+   * @var ExactTarget_Email $Email
+   */
+  public $Email;
+  /**
+   * @var ExactTarget_Subscriber $Subscriber
+   */
+  public $Subscriber;
+  /**
+   * @var dateTime $ClickDate
+   */
+  public $ClickDate;
+  /**
+   * @var dateTime $BounceDate
+   */
+  public $BounceDate;
+  /**
+   * @var dateTime $OpenDate
+   */
+  public $OpenDate;
+  /**
+   * @var dateTime $SentDate
+   */
+  public $SentDate;
+  /**
+   * @var string $LastAction
+   */
+  public $LastAction;
+  /**
+   * @var dateTime $UnsubscribeDate
+   */
+  public $UnsubscribeDate;
+  /**
+   * @var string $FromAddress
+   */
+  public $FromAddress;
+  /**
+   * @var string $FromName
+   */
+  public $FromName;
+  /**
+   * @var int $TotalClicks
+   */
+  public $TotalClicks;
+  /**
+   * @var int $UniqueClicks
+   */
+  public $UniqueClicks;
+  /**
+   * @var string $Subject
+   */
+  public $Subject;
+  /**
+   * @var string $ViewSentEmailURL
+   */
+  public $ViewSentEmailURL;
+  /**
+   * @var int $HardBounces
+   */
+  public $HardBounces;
+  /**
+   * @var int $SoftBounces
+   */
+  public $SoftBounces;
+  /**
+   * @var int $OtherBounces
+   */
+  public $OtherBounces;
 }
 
 class ExactTarget_TriggeredSendSummary {
-  public $TriggeredSendDefinition; // ExactTarget_TriggeredSendDefinition
-  public $Sent; // long
-  public $NotSentDueToOptOut; // long
-  public $NotSentDueToUndeliverable; // long
-  public $Bounces; // long
-  public $Opens; // long
-  public $Clicks; // long
-  public $UniqueOpens; // long
-  public $UniqueClicks; // long
-  public $OptOuts; // long
-  public $SurveyResponses; // long
-  public $FTAFRequests; // long
-  public $FTAFEmailsSent; // long
-  public $FTAFOptIns; // long
-  public $Conversions; // long
-  public $UniqueConversions; // long
-  public $InProcess; // long
-  public $NotSentDueToError; // long
+  /**
+   * @var ExactTarget_TriggeredSendDefinition $TriggeredSendDefinition
+   */
+  public $TriggeredSendDefinition;
+  /**
+   * @var long $Sent
+   */
+  public $Sent;
+  /**
+   * @var long $NotSentDueToOptOut
+   */
+  public $NotSentDueToOptOut;
+  /**
+   * @var long $NotSentDueToUndeliverable
+   */
+  public $NotSentDueToUndeliverable;
+  /**
+   * @var long $Bounces
+   */
+  public $Bounces;
+  /**
+   * @var long $Opens
+   */
+  public $Opens;
+  /**
+   * @var long $Clicks
+   */
+  public $Clicks;
+  /**
+   * @var long $UniqueOpens
+   */
+  public $UniqueOpens;
+  /**
+   * @var long $UniqueClicks
+   */
+  public $UniqueClicks;
+  /**
+   * @var long $OptOuts
+   */
+  public $OptOuts;
+  /**
+   * @var long $SurveyResponses
+   */
+  public $SurveyResponses;
+  /**
+   * @var long $FTAFRequests
+   */
+  public $FTAFRequests;
+  /**
+   * @var long $FTAFEmailsSent
+   */
+  public $FTAFEmailsSent;
+  /**
+   * @var long $FTAFOptIns
+   */
+  public $FTAFOptIns;
+  /**
+   * @var long $Conversions
+   */
+  public $Conversions;
+  /**
+   * @var long $UniqueConversions
+   */
+  public $UniqueConversions;
+  /**
+   * @var long $InProcess
+   */
+  public $InProcess;
+  /**
+   * @var long $NotSentDueToError
+   */
+  public $NotSentDueToError;
 }
 
 class ExactTarget_AsyncRequestResult {
-  public $Status; // string
-  public $CompleteDate; // dateTime
-  public $CallStatus; // string
-  public $CallMessage; // string
+  /**
+   * @var string $Status
+   */
+  public $Status;
+  /**
+   * @var dateTime $CompleteDate
+   */
+  public $CompleteDate;
+  /**
+   * @var string $CallStatus
+   */
+  public $CallStatus;
+  /**
+   * @var string $CallMessage
+   */
+  public $CallMessage;
 }
 
 class ExactTarget_VoiceTriggeredSend {
-  public $VoiceTriggeredSendDefinition; // ExactTarget_VoiceTriggeredSendDefinition
-  public $Subscriber; // ExactTarget_Subscriber
-  public $Message; // string
-  public $Number; // string
-  public $TransferMessage; // string
-  public $TransferNumber; // string
+  /**
+   * @var ExactTarget_VoiceTriggeredSendDefinition $VoiceTriggeredSendDefinition
+   */
+  public $VoiceTriggeredSendDefinition;
+  /**
+   * @var ExactTarget_Subscriber $Subscriber
+   */
+  public $Subscriber;
+  /**
+   * @var string $Message
+   */
+  public $Message;
+  /**
+   * @var string $Number
+   */
+  public $Number;
+  /**
+   * @var string $TransferMessage
+   */
+  public $TransferMessage;
+  /**
+   * @var string $TransferNumber
+   */
+  public $TransferNumber;
 }
 
 class ExactTarget_VoiceTriggeredSendDefinition {
 }
 
 class ExactTarget_SMSTriggeredSend {
-  public $SMSTriggeredSendDefinition; // ExactTarget_SMSTriggeredSendDefinition
-  public $Subscriber; // ExactTarget_Subscriber
-  public $Message; // string
-  public $Number; // string
-  public $FromAddress; // string
-  public $SmsSendId; // string
+  /**
+   * @var ExactTarget_SMSTriggeredSendDefinition $SMSTriggeredSendDefinition
+   */
+  public $SMSTriggeredSendDefinition;
+  /**
+   * @var ExactTarget_Subscriber $Subscriber
+   */
+  public $Subscriber;
+  /**
+   * @var string $Message
+   */
+  public $Message;
+  /**
+   * @var string $Number
+   */
+  public $Number;
+  /**
+   * @var string $FromAddress
+   */
+  public $FromAddress;
+  /**
+   * @var string $SmsSendId
+   */
+  public $SmsSendId;
 }
 
 class ExactTarget_SMSTriggeredSendDefinition {
-  public $Publication; // ExactTarget_List
-  public $DataExtension; // ExactTarget_DataExtension
-  public $Content; // ExactTarget_ContentArea
-  public $SendToList; // boolean
+  /**
+   * @var ExactTarget_List $Publication
+   */
+  public $Publication;
+  /**
+   * @var ExactTarget_DataExtension $DataExtension
+   */
+  public $DataExtension;
+  /**
+   * @var ExactTarget_ContentArea $Content
+   */
+  public $Content;
+  /**
+   * @var boolean $SendToList
+   */
+  public $SendToList;
 }
 
 class ExactTarget_SendClassification {
-  public $SendClassificationType; // ExactTarget_SendClassificationTypeEnum
-  public $Name; // string
-  public $Description; // string
-  public $SenderProfile; // ExactTarget_SenderProfile
-  public $DeliveryProfile; // ExactTarget_DeliveryProfile
-  public $HonorPublicationListOptOutsForTransactionalSends; // boolean
-  public $SendPriority; // ExactTarget_SendPriorityEnum
+  /**
+   * @var ExactTarget_SendClassificationTypeEnum $SendClassificationType
+   */
+  public $SendClassificationType;
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var ExactTarget_SenderProfile $SenderProfile
+   */
+  public $SenderProfile;
+  /**
+   * @var ExactTarget_DeliveryProfile $DeliveryProfile
+   */
+  public $DeliveryProfile;
+  /**
+   * @var boolean $HonorPublicationListOptOutsForTransactionalSends
+   */
+  public $HonorPublicationListOptOutsForTransactionalSends;
+  /**
+   * @var ExactTarget_SendPriorityEnum $SendPriority
+   */
+  public $SendPriority;
 }
 
 class ExactTarget_SendClassificationTypeEnum {
@@ -1651,38 +4011,125 @@ class ExactTarget_SendPriorityEnum {
 }
 
 class ExactTarget_SenderProfile {
-  public $Name; // string
-  public $Description; // string
-  public $FromName; // string
-  public $FromAddress; // string
-  public $UseDefaultRMMRules; // boolean
-  public $AutoForwardToEmailAddress; // string
-  public $AutoForwardToName; // string
-  public $DirectForward; // boolean
-  public $AutoForwardTriggeredSend; // ExactTarget_TriggeredSendDefinition
-  public $AutoReply; // boolean
-  public $AutoReplyTriggeredSend; // ExactTarget_TriggeredSendDefinition
-  public $SenderHeaderEmailAddress; // string
-  public $SenderHeaderName; // string
-  public $DataRetentionPeriodLength; // short
-  public $DataRetentionPeriodUnitOfMeasure; // ExactTarget_RecurrenceTypeEnum
-  public $ReplyManagementRuleSet; // ExactTarget_APIObject
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var string $FromName
+   */
+  public $FromName;
+  /**
+   * @var string $FromAddress
+   */
+  public $FromAddress;
+  /**
+   * @var boolean $UseDefaultRMMRules
+   */
+  public $UseDefaultRMMRules;
+  /**
+   * @var string $AutoForwardToEmailAddress
+   */
+  public $AutoForwardToEmailAddress;
+  /**
+   * @var string $AutoForwardToName
+   */
+  public $AutoForwardToName;
+  /**
+   * @var boolean $DirectForward
+   */
+  public $DirectForward;
+  /**
+   * @var ExactTarget_TriggeredSendDefinition $AutoForwardTriggeredSend
+   */
+  public $AutoForwardTriggeredSend;
+  /**
+   * @var boolean $AutoReply
+   */
+  public $AutoReply;
+  /**
+   * @var ExactTarget_TriggeredSendDefinition $AutoReplyTriggeredSend
+   */
+  public $AutoReplyTriggeredSend;
+  /**
+   * @var string $SenderHeaderEmailAddress
+   */
+  public $SenderHeaderEmailAddress;
+  /**
+   * @var string $SenderHeaderName
+   */
+  public $SenderHeaderName;
+  /**
+   * @var short $DataRetentionPeriodLength
+   */
+  public $DataRetentionPeriodLength;
+  /**
+   * @var ExactTarget_RecurrenceTypeEnum $DataRetentionPeriodUnitOfMeasure
+   */
+  public $DataRetentionPeriodUnitOfMeasure;
+  /**
+   * @var ExactTarget_APIObject $ReplyManagementRuleSet
+   */
+  public $ReplyManagementRuleSet;
 }
 
 class ExactTarget_DeliveryProfile {
-  public $Name; // string
-  public $Description; // string
-  public $SourceAddressType; // ExactTarget_DeliveryProfileSourceAddressTypeEnum
-  public $PrivateIP; // ExactTarget_PrivateIP
-  public $DomainType; // ExactTarget_DeliveryProfileDomainTypeEnum
-  public $PrivateDomain; // ExactTarget_PrivateDomain
-  public $HeaderSalutationSource; // ExactTarget_SalutationSourceEnum
-  public $HeaderContentArea; // ExactTarget_ContentArea
-  public $FooterSalutationSource; // ExactTarget_SalutationSourceEnum
-  public $FooterContentArea; // ExactTarget_ContentArea
-  public $SubscriberLevelPrivateDomain; // boolean
-  public $SMIMESignatureCertificate; // ExactTarget_Certificate
-  public $PrivateDomainSet; // ExactTarget_PrivateDomainSet
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var ExactTarget_DeliveryProfileSourceAddressTypeEnum $SourceAddressType
+   */
+  public $SourceAddressType;
+  /**
+   * @var ExactTarget_PrivateIP $PrivateIP
+   */
+  public $PrivateIP;
+  /**
+   * @var ExactTarget_DeliveryProfileDomainTypeEnum $DomainType
+   */
+  public $DomainType;
+  /**
+   * @var ExactTarget_PrivateDomain $PrivateDomain
+   */
+  public $PrivateDomain;
+  /**
+   * @var ExactTarget_SalutationSourceEnum $HeaderSalutationSource
+   */
+  public $HeaderSalutationSource;
+  /**
+   * @var ExactTarget_ContentArea $HeaderContentArea
+   */
+  public $HeaderContentArea;
+  /**
+   * @var ExactTarget_SalutationSourceEnum $FooterSalutationSource
+   */
+  public $FooterSalutationSource;
+  /**
+   * @var ExactTarget_ContentArea $FooterContentArea
+   */
+  public $FooterContentArea;
+  /**
+   * @var boolean $SubscriberLevelPrivateDomain
+   */
+  public $SubscriberLevelPrivateDomain;
+  /**
+   * @var ExactTarget_Certificate $SMIMESignatureCertificate
+   */
+  public $SMIMESignatureCertificate;
+  /**
+   * @var ExactTarget_PrivateDomainSet $PrivateDomainSet
+   */
+  public $PrivateDomainSet;
 }
 
 class ExactTarget_DeliveryProfileSourceAddressTypeEnum {
@@ -1708,77 +4155,236 @@ class ExactTarget_PrivateDomainSet {
 }
 
 class ExactTarget_PrivateIP {
-  public $Name; // string
-  public $Description; // string
-  public $IsActive; // boolean
-  public $OrdinalID; // short
-  public $IPAddress; // string
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var boolean $IsActive
+   */
+  public $IsActive;
+  /**
+   * @var short $OrdinalID
+   */
+  public $OrdinalID;
+  /**
+   * @var string $IPAddress
+   */
+  public $IPAddress;
 }
 
 class ExactTarget_SendDefinition {
-  public $CategoryID; // int
-  public $SendClassification; // ExactTarget_SendClassification
-  public $SenderProfile; // ExactTarget_SenderProfile
-  public $FromName; // string
-  public $FromAddress; // string
-  public $DeliveryProfile; // ExactTarget_DeliveryProfile
-  public $SourceAddressType; // ExactTarget_DeliveryProfileSourceAddressTypeEnum
-  public $PrivateIP; // ExactTarget_PrivateIP
-  public $DomainType; // ExactTarget_DeliveryProfileDomainTypeEnum
-  public $PrivateDomain; // ExactTarget_PrivateDomain
-  public $HeaderSalutationSource; // ExactTarget_SalutationSourceEnum
-  public $HeaderContentArea; // ExactTarget_ContentArea
-  public $FooterSalutationSource; // ExactTarget_SalutationSourceEnum
-  public $FooterContentArea; // ExactTarget_ContentArea
-  public $SuppressTracking; // boolean
-  public $IsSendLogging; // boolean
+  /**
+   * @var int $CategoryID
+   */
+  public $CategoryID;
+  /**
+   * @var ExactTarget_SendClassification $SendClassification
+   */
+  public $SendClassification;
+  /**
+   * @var ExactTarget_SenderProfile $SenderProfile
+   */
+  public $SenderProfile;
+  /**
+   * @var string $FromName
+   */
+  public $FromName;
+  /**
+   * @var string $FromAddress
+   */
+  public $FromAddress;
+  /**
+   * @var ExactTarget_DeliveryProfile $DeliveryProfile
+   */
+  public $DeliveryProfile;
+  /**
+   * @var ExactTarget_DeliveryProfileSourceAddressTypeEnum $SourceAddressType
+   */
+  public $SourceAddressType;
+  /**
+   * @var ExactTarget_PrivateIP $PrivateIP
+   */
+  public $PrivateIP;
+  /**
+   * @var ExactTarget_DeliveryProfileDomainTypeEnum $DomainType
+   */
+  public $DomainType;
+  /**
+   * @var ExactTarget_PrivateDomain $PrivateDomain
+   */
+  public $PrivateDomain;
+  /**
+   * @var ExactTarget_SalutationSourceEnum $HeaderSalutationSource
+   */
+  public $HeaderSalutationSource;
+  /**
+   * @var ExactTarget_ContentArea $HeaderContentArea
+   */
+  public $HeaderContentArea;
+  /**
+   * @var ExactTarget_SalutationSourceEnum $FooterSalutationSource
+   */
+  public $FooterSalutationSource;
+  /**
+   * @var ExactTarget_ContentArea $FooterContentArea
+   */
+  public $FooterContentArea;
+  /**
+   * @var boolean $SuppressTracking
+   */
+  public $SuppressTracking;
+  /**
+   * @var boolean $IsSendLogging
+   */
+  public $IsSendLogging;
 }
 
 class ExactTarget_AudienceItem {
-  public $List; // ExactTarget_List
-  public $SendDefinitionListType; // ExactTarget_SendDefinitionListTypeEnum
-  public $CustomObjectID; // string
-  public $DataSourceTypeID; // ExactTarget_DataSourceTypeEnum
+  /**
+   * @var ExactTarget_List $List
+   */
+  public $List;
+  /**
+   * @var ExactTarget_SendDefinitionListTypeEnum $SendDefinitionListType
+   */
+  public $SendDefinitionListType;
+  /**
+   * @var string $CustomObjectID
+   */
+  public $CustomObjectID;
+  /**
+   * @var ExactTarget_DataSourceTypeEnum $DataSourceTypeID
+   */
+  public $DataSourceTypeID;
 }
 
 class ExactTarget_EmailSendDefinition {
-  public $SendDefinitionList; // ExactTarget_SendDefinitionList
-  public $Email; // ExactTarget_Email
-  public $BccEmail; // string
-  public $AutoBccEmail; // string
-  public $TestEmailAddr; // string
-  public $EmailSubject; // string
-  public $DynamicEmailSubject; // string
-  public $IsMultipart; // boolean
-  public $IsWrapped; // boolean
-  public $SendLimit; // int
-  public $SendWindowOpen; // time
-  public $SendWindowClose; // time
-  public $SendWindowDelete; // boolean
-  public $DeduplicateByEmail; // boolean
-  public $ExclusionFilter; // string
-  public $TrackingUsers; // ExactTarget_TrackingUsers
-  public $Additional; // string
-  public $CCEmail; // string
-  public $DeliveryScheduledTime; // time
-  public $MessageDeliveryType; // ExactTarget_MessageDeliveryTypeEnum
-  public $IsSeedListSend; // boolean
+  /**
+   * @var ExactTarget_SendDefinitionList $SendDefinitionList
+   */
+  public $SendDefinitionList;
+  /**
+   * @var ExactTarget_Email $Email
+   */
+  public $Email;
+  /**
+   * @var string $BccEmail
+   */
+  public $BccEmail;
+  /**
+   * @var string $AutoBccEmail
+   */
+  public $AutoBccEmail;
+  /**
+   * @var string $TestEmailAddr
+   */
+  public $TestEmailAddr;
+  /**
+   * @var string $EmailSubject
+   */
+  public $EmailSubject;
+  /**
+   * @var string $DynamicEmailSubject
+   */
+  public $DynamicEmailSubject;
+  /**
+   * @var boolean $IsMultipart
+   */
+  public $IsMultipart;
+  /**
+   * @var boolean $IsWrapped
+   */
+  public $IsWrapped;
+  /**
+   * @var int $SendLimit
+   */
+  public $SendLimit;
+  /**
+   * @var time $SendWindowOpen
+   */
+  public $SendWindowOpen;
+  /**
+   * @var time $SendWindowClose
+   */
+  public $SendWindowClose;
+  /**
+   * @var boolean $SendWindowDelete
+   */
+  public $SendWindowDelete;
+  /**
+   * @var boolean $DeduplicateByEmail
+   */
+  public $DeduplicateByEmail;
+  /**
+   * @var string $ExclusionFilter
+   */
+  public $ExclusionFilter;
+  /**
+   * @var ExactTarget_TrackingUsers $TrackingUsers
+   */
+  public $TrackingUsers;
+  /**
+   * @var string $Additional
+   */
+  public $Additional;
+  /**
+   * @var string $CCEmail
+   */
+  public $CCEmail;
+  /**
+   * @var time $DeliveryScheduledTime
+   */
+  public $DeliveryScheduledTime;
+  /**
+   * @var ExactTarget_MessageDeliveryTypeEnum $MessageDeliveryType
+   */
+  public $MessageDeliveryType;
+  /**
+   * @var boolean $IsSeedListSend
+   */
+  public $IsSeedListSend;
 }
 
 class ExactTarget_TrackingUsers {
-  public $TrackingUser; // ExactTarget_TrackingUser
+  /**
+   * @var ExactTarget_TrackingUser $TrackingUser
+   */
+  public $TrackingUser;
 }
 
 class ExactTarget_SendDefinitionList {
-  public $FilterDefinition; // ExactTarget_FilterDefinition
-  public $IsTestObject; // boolean
-  public $SalesForceObjectID; // string
-  public $Name; // string
-  public $Parameters; // ExactTarget_Parameters
+  /**
+   * @var ExactTarget_FilterDefinition $FilterDefinition
+   */
+  public $FilterDefinition;
+  /**
+   * @var boolean $IsTestObject
+   */
+  public $IsTestObject;
+  /**
+   * @var string $SalesForceObjectID
+   */
+  public $SalesForceObjectID;
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var ExactTarget_Parameters $Parameters
+   */
+  public $Parameters;
 }
 
 class ExactTarget_Parameters {
-  public $Parameter; // ExactTarget_APIProperty
+  /**
+   * @var ExactTarget_APIProperty $Parameter
+   */
+  public $Parameter;
 }
 
 class ExactTarget_SendDefinitionStatusEnum {
@@ -1810,119 +4416,323 @@ class ExactTarget_MessageDeliveryTypeEnum {
 }
 
 class ExactTarget_TrackingUser {
-  public $IsActive; // boolean
-  public $EmployeeID; // int
+  /**
+   * @var boolean $IsActive
+   */
+  public $IsActive;
+  /**
+   * @var int $EmployeeID
+   */
+  public $EmployeeID;
 }
 
 class ExactTarget_MessagingVendorKind {
-  public $Vendor; // string
-  public $Kind; // string
-  public $IsUsernameRequired; // boolean
-  public $IsPasswordRequired; // boolean
-  public $IsProfileRequired; // boolean
+  /**
+   * @var string $Vendor
+   */
+  public $Vendor;
+  /**
+   * @var string $Kind
+   */
+  public $Kind;
+  /**
+   * @var boolean $IsUsernameRequired
+   */
+  public $IsUsernameRequired;
+  /**
+   * @var boolean $IsPasswordRequired
+   */
+  public $IsPasswordRequired;
+  /**
+   * @var boolean $IsProfileRequired
+   */
+  public $IsProfileRequired;
 }
 
 class ExactTarget_MessagingConfiguration {
-  public $Code; // string
-  public $MessagingVendorKind; // ExactTarget_MessagingVendorKind
-  public $IsActive; // boolean
-  public $Url; // string
-  public $UserName; // string
-  public $Password; // string
-  public $ProfileID; // string
-  public $CallbackUrl; // string
-  public $MediaTypes; // string
+  /**
+   * @var string $Code
+   */
+  public $Code;
+  /**
+   * @var ExactTarget_MessagingVendorKind $MessagingVendorKind
+   */
+  public $MessagingVendorKind;
+  /**
+   * @var boolean $IsActive
+   */
+  public $IsActive;
+  /**
+   * @var string $Url
+   */
+  public $Url;
+  /**
+   * @var string $UserName
+   */
+  public $UserName;
+  /**
+   * @var string $Password
+   */
+  public $Password;
+  /**
+   * @var string $ProfileID
+   */
+  public $ProfileID;
+  /**
+   * @var string $CallbackUrl
+   */
+  public $CallbackUrl;
+  /**
+   * @var string $MediaTypes
+   */
+  public $MediaTypes;
 }
 
 class ExactTarget_SMSMTEvent {
-  public $SMSTriggeredSend; // ExactTarget_SMSTriggeredSend
-  public $Subscriber; // ExactTarget_Subscriber
-  public $MOCode; // string
-  public $EventDate; // dateTime
-  public $Carrier; // string
+  /**
+   * @var ExactTarget_SMSTriggeredSend $SMSTriggeredSend
+   */
+  public $SMSTriggeredSend;
+  /**
+   * @var ExactTarget_Subscriber $Subscriber
+   */
+  public $Subscriber;
+  /**
+   * @var string $MOCode
+   */
+  public $MOCode;
+  /**
+   * @var dateTime $EventDate
+   */
+  public $EventDate;
+  /**
+   * @var string $Carrier
+   */
+  public $Carrier;
 }
 
 class ExactTarget_SMSMOEvent {
-  public $Keyword; // ExactTarget_BaseMOKeyword
-  public $MobileTelephoneNumber; // string
-  public $MOCode; // string
-  public $EventDate; // dateTime
-  public $MOMessage; // string
-  public $MTMessage; // string
-  public $Carrier; // string
+  /**
+   * @var ExactTarget_BaseMOKeyword $Keyword
+   */
+  public $Keyword;
+  /**
+   * @var string $MobileTelephoneNumber
+   */
+  public $MobileTelephoneNumber;
+  /**
+   * @var string $MOCode
+   */
+  public $MOCode;
+  /**
+   * @var dateTime $EventDate
+   */
+  public $EventDate;
+  /**
+   * @var string $MOMessage
+   */
+  public $MOMessage;
+  /**
+   * @var string $MTMessage
+   */
+  public $MTMessage;
+  /**
+   * @var string $Carrier
+   */
+  public $Carrier;
 }
 
 class ExactTarget_BaseMOKeyword {
-  public $IsDefaultKeyword; // boolean
+  /**
+   * @var boolean $IsDefaultKeyword
+   */
+  public $IsDefaultKeyword;
 }
 
 class ExactTarget_SendSMSMOKeyword {
-  public $NextMOKeyword; // ExactTarget_BaseMOKeyword
-  public $Message; // string
-  public $ScriptErrorMessage; // string
+  /**
+   * @var ExactTarget_BaseMOKeyword $NextMOKeyword
+   */
+  public $NextMOKeyword;
+  /**
+   * @var string $Message
+   */
+  public $Message;
+  /**
+   * @var string $ScriptErrorMessage
+   */
+  public $ScriptErrorMessage;
 }
 
 class ExactTarget_UnsubscribeFromSMSPublicationMOKeyword {
-  public $NextMOKeyword; // ExactTarget_BaseMOKeyword
-  public $AllUnsubSuccessMessage; // string
-  public $InvalidPublicationMessage; // string
-  public $SingleUnsubSuccessMessage; // string
+  /**
+   * @var ExactTarget_BaseMOKeyword $NextMOKeyword
+   */
+  public $NextMOKeyword;
+  /**
+   * @var string $AllUnsubSuccessMessage
+   */
+  public $AllUnsubSuccessMessage;
+  /**
+   * @var string $InvalidPublicationMessage
+   */
+  public $InvalidPublicationMessage;
+  /**
+   * @var string $SingleUnsubSuccessMessage
+   */
+  public $SingleUnsubSuccessMessage;
 }
 
 class ExactTarget_DoubleOptInMOKeyword {
-  public $DefaultPublication; // ExactTarget_List
-  public $InvalidPublicationMessage; // string
-  public $InvalidResponseMessage; // string
-  public $MissingPublicationMessage; // string
-  public $NeedPublicationMessage; // string
-  public $PromptMessage; // string
-  public $SuccessMessage; // string
-  public $UnexpectedErrorMessage; // string
-  public $ValidPublications; // ExactTarget_ValidPublications
-  public $ValidResponses; // ExactTarget_ValidResponses
+  /**
+   * @var ExactTarget_List $DefaultPublication
+   */
+  public $DefaultPublication;
+  /**
+   * @var string $InvalidPublicationMessage
+   */
+  public $InvalidPublicationMessage;
+  /**
+   * @var string $InvalidResponseMessage
+   */
+  public $InvalidResponseMessage;
+  /**
+   * @var string $MissingPublicationMessage
+   */
+  public $MissingPublicationMessage;
+  /**
+   * @var string $NeedPublicationMessage
+   */
+  public $NeedPublicationMessage;
+  /**
+   * @var string $PromptMessage
+   */
+  public $PromptMessage;
+  /**
+   * @var string $SuccessMessage
+   */
+  public $SuccessMessage;
+  /**
+   * @var string $UnexpectedErrorMessage
+   */
+  public $UnexpectedErrorMessage;
+  /**
+   * @var ExactTarget_ValidPublications $ValidPublications
+   */
+  public $ValidPublications;
+  /**
+   * @var ExactTarget_ValidResponses $ValidResponses
+   */
+  public $ValidResponses;
 }
 
 class ExactTarget_ValidPublications {
-  public $ValidPublication; // ExactTarget_List
+  /**
+   * @var ExactTarget_List $ValidPublication
+   */
+  public $ValidPublication;
 }
 
 class ExactTarget_ValidResponses {
-  public $ValidResponse; // string
+  /**
+   * @var string $ValidResponse
+   */
+  public $ValidResponse;
 }
 
 class ExactTarget_HelpMOKeyword {
-  public $FriendlyName; // string
-  public $DefaultHelpMessage; // string
-  public $MenuText; // string
-  public $MoreChoicesPrompt; // string
+  /**
+   * @var string $FriendlyName
+   */
+  public $FriendlyName;
+  /**
+   * @var string $DefaultHelpMessage
+   */
+  public $DefaultHelpMessage;
+  /**
+   * @var string $MenuText
+   */
+  public $MenuText;
+  /**
+   * @var string $MoreChoicesPrompt
+   */
+  public $MoreChoicesPrompt;
 }
 
 class ExactTarget_SendEmailMOKeyword {
-  public $SuccessMessage; // string
-  public $MissingEmailMessage; // string
-  public $FailureMessage; // string
-  public $TriggeredSend; // ExactTarget_TriggeredSendDefinition
-  public $NextMOKeyword; // ExactTarget_BaseMOKeyword
+  /**
+   * @var string $SuccessMessage
+   */
+  public $SuccessMessage;
+  /**
+   * @var string $MissingEmailMessage
+   */
+  public $MissingEmailMessage;
+  /**
+   * @var string $FailureMessage
+   */
+  public $FailureMessage;
+  /**
+   * @var ExactTarget_TriggeredSendDefinition $TriggeredSend
+   */
+  public $TriggeredSend;
+  /**
+   * @var ExactTarget_BaseMOKeyword $NextMOKeyword
+   */
+  public $NextMOKeyword;
 }
 
 class ExactTarget_SMSSharedKeyword {
-  public $ShortCode; // string
-  public $SharedKeyword; // string
-  public $RequestDate; // dateTime
-  public $EffectiveDate; // dateTime
-  public $ExpireDate; // dateTime
-  public $ReturnToPoolDate; // dateTime
-  public $CountryCode; // string
+  /**
+   * @var string $ShortCode
+   */
+  public $ShortCode;
+  /**
+   * @var string $SharedKeyword
+   */
+  public $SharedKeyword;
+  /**
+   * @var dateTime $RequestDate
+   */
+  public $RequestDate;
+  /**
+   * @var dateTime $EffectiveDate
+   */
+  public $EffectiveDate;
+  /**
+   * @var dateTime $ExpireDate
+   */
+  public $ExpireDate;
+  /**
+   * @var dateTime $ReturnToPoolDate
+   */
+  public $ReturnToPoolDate;
+  /**
+   * @var string $CountryCode
+   */
+  public $CountryCode;
 }
 
 class ExactTarget_UserMap {
-  public $ETAccountUser; // ExactTarget_AccountUser
-  public $AdditionalData; // ExactTarget_APIProperty
+  /**
+   * @var ExactTarget_AccountUser $ETAccountUser
+   */
+  public $ETAccountUser;
+  /**
+   * @var ExactTarget_APIProperty $AdditionalData
+   */
+  public $AdditionalData;
 }
 
 class ExactTarget_Folder {
-  public $ID; // int
-  public $ParentID; // int
+  /**
+   * @var int $ID
+   */
+  public $ID;
+  /**
+   * @var int $ParentID
+   */
+  public $ParentID;
 }
 
 class ExactTarget_FileTransferLocation {
@@ -1941,34 +4751,100 @@ class ExactTarget_ReportActivity {
 }
 
 class ExactTarget_DataExtension {
-  public $Name; // string
-  public $Description; // string
-  public $IsSendable; // boolean
-  public $IsTestable; // boolean
-  public $SendableDataExtensionField; // ExactTarget_DataExtensionField
-  public $SendableSubscriberField; // ExactTarget_Attribute
-  public $Template; // ExactTarget_DataExtensionTemplate
-  public $DataRetentionPeriodLength; // int
-  public $DataRetentionPeriodUnitOfMeasure; // int
-  public $RowBasedRetention; // boolean
-  public $ResetRetentionPeriodOnImport; // boolean
-  public $DeleteAtEndOfRetentionPeriod; // boolean
-  public $RetainUntil; // string
-  public $Fields; // ExactTarget_Fields
-  public $DataRetentionPeriod; // ExactTarget_DateTimeUnitOfMeasure
-  public $CategoryID; // long
-  public $Status; // string
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var boolean $IsSendable
+   */
+  public $IsSendable;
+  /**
+   * @var boolean $IsTestable
+   */
+  public $IsTestable;
+  /**
+   * @var ExactTarget_DataExtensionField $SendableDataExtensionField
+   */
+  public $SendableDataExtensionField;
+  /**
+   * @var ExactTarget_Attribute $SendableSubscriberField
+   */
+  public $SendableSubscriberField;
+  /**
+   * @var ExactTarget_DataExtensionTemplate $Template
+   */
+  public $Template;
+  /**
+   * @var int $DataRetentionPeriodLength
+   */
+  public $DataRetentionPeriodLength;
+  /**
+   * @var int $DataRetentionPeriodUnitOfMeasure
+   */
+  public $DataRetentionPeriodUnitOfMeasure;
+  /**
+   * @var boolean $RowBasedRetention
+   */
+  public $RowBasedRetention;
+  /**
+   * @var boolean $ResetRetentionPeriodOnImport
+   */
+  public $ResetRetentionPeriodOnImport;
+  /**
+   * @var boolean $DeleteAtEndOfRetentionPeriod
+   */
+  public $DeleteAtEndOfRetentionPeriod;
+  /**
+   * @var string $RetainUntil
+   */
+  public $RetainUntil;
+  /**
+   * @var ExactTarget_Fields $Fields
+   */
+  public $Fields;
+  /**
+   * @var ExactTarget_DateTimeUnitOfMeasure $DataRetentionPeriod
+   */
+  public $DataRetentionPeriod;
+  /**
+   * @var long $CategoryID
+   */
+  public $CategoryID;
+  /**
+   * @var string $Status
+   */
+  public $Status;
 }
 
 class ExactTarget_Fields {
-  public $Field; // ExactTarget_DataExtensionField
+  /**
+   * @var ExactTarget_DataExtensionField $Field
+   */
+  public $Field;
 }
 
 class ExactTarget_DataExtensionField {
-  public $Ordinal; // int
-  public $IsPrimaryKey; // boolean
-  public $FieldType; // ExactTarget_DataExtensionFieldType
-  public $DataExtension; // ExactTarget_DataExtension
+  /**
+   * @var int $Ordinal
+   */
+  public $Ordinal;
+  /**
+   * @var boolean $IsPrimaryKey
+   */
+  public $IsPrimaryKey;
+  /**
+   * @var ExactTarget_DataExtensionFieldType $FieldType
+   */
+  public $FieldType;
+  /**
+   * @var ExactTarget_DataExtension $DataExtension
+   */
+  public $DataExtension;
 }
 
 class ExactTarget_DataExtensionFieldType {
@@ -1990,51 +4866,105 @@ class ExactTarget_DateTimeUnitOfMeasure {
 }
 
 class ExactTarget_DataExtensionTemplate {
-  public $Name; // string
-  public $Description; // string
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Description
+   */
+  public $Description;
 }
 
 class ExactTarget_DataExtensionObject {
-  public $Name; // string
-  public $Keys; // ExactTarget_Keys
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var ExactTarget_Keys $Keys
+   */
+  public $Keys;
 }
 
 class ExactTarget_Keys {
-  public $Key; // ExactTarget_APIProperty
+  /**
+   * @var ExactTarget_APIProperty $Key
+   */
+  public $Key;
 }
 
 class ExactTarget_DataExtensionError {
-  public $Name; // string
-  public $ErrorCode; // integer
-  public $ErrorMessage; // string
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var integer $ErrorCode
+   */
+  public $ErrorCode;
+  /**
+   * @var string $ErrorMessage
+   */
+  public $ErrorMessage;
 }
 
 class ExactTarget_DataExtensionCreateResult {
-  public $ErrorMessage; // string
-  public $KeyErrors; // ExactTarget_KeyErrors
-  public $ValueErrors; // ExactTarget_ValueErrors
+  /**
+   * @var string $ErrorMessage
+   */
+  public $ErrorMessage;
+  /**
+   * @var ExactTarget_KeyErrors $KeyErrors
+   */
+  public $KeyErrors;
+  /**
+   * @var ExactTarget_ValueErrors $ValueErrors
+   */
+  public $ValueErrors;
 }
 
 class ExactTarget_KeyErrors {
-  public $KeyError; // ExactTarget_DataExtensionError
+  /**
+   * @var ExactTarget_DataExtensionError $KeyError
+   */
+  public $KeyError;
 }
 
 class ExactTarget_ValueErrors {
-  public $ValueError; // ExactTarget_DataExtensionError
+  /**
+   * @var ExactTarget_DataExtensionError $ValueError
+   */
+  public $ValueError;
 }
 
 class ExactTarget_DataExtensionUpdateResult {
-  public $ErrorMessage; // string
-  public $KeyErrors; // ExactTarget_KeyErrors
-  public $ValueErrors; // ExactTarget_ValueErrors
+  /**
+   * @var string $ErrorMessage
+   */
+  public $ErrorMessage;
+  /**
+   * @var ExactTarget_KeyErrors $KeyErrors
+   */
+  public $KeyErrors;
+  /**
+   * @var ExactTarget_ValueErrors $ValueErrors
+   */
+  public $ValueErrors;
 }
 
 
 
 
 class ExactTarget_DataExtensionDeleteResult {
-  public $ErrorMessage; // string
-  public $KeyErrors; // ExactTarget_KeyErrors
+  /**
+   * @var string $ErrorMessage
+   */
+  public $ErrorMessage;
+  /**
+   * @var ExactTarget_KeyErrors $KeyErrors
+   */
+  public $KeyErrors;
 }
 
 
@@ -2060,8 +4990,14 @@ class ExactTarget_ImportDefinitionUpdateType {
 }
 
 class ExactTarget_ImportDefinitionColumnBasedAction {
-  public $Value; // string
-  public $Action; // ExactTarget_ImportDefinitionColumnBasedActionType
+  /**
+   * @var string $Value
+   */
+  public $Value;
+  /**
+   * @var ExactTarget_ImportDefinitionColumnBasedActionType $Action
+   */
+  public $Action;
 }
 
 class ExactTarget_ImportDefinitionColumnBasedActionType {
@@ -2079,76 +5015,223 @@ class ExactTarget_ImportDefinitionFieldMappingType {
 }
 
 class ExactTarget_FieldMap {
-  public $SourceName; // string
-  public $SourceOrdinal; // int
-  public $DestinationName; // string
+  /**
+   * @var string $SourceName
+   */
+  public $SourceName;
+  /**
+   * @var int $SourceOrdinal
+   */
+  public $SourceOrdinal;
+  /**
+   * @var string $DestinationName
+   */
+  public $DestinationName;
 }
 
 class ExactTarget_ImportDefinitionAutoGenerateDestination {
-  public $DataExtensionTarget; // ExactTarget_DataExtension
-  public $ErrorIfExists; // boolean
+  /**
+   * @var ExactTarget_DataExtension $DataExtensionTarget
+   */
+  public $DataExtensionTarget;
+  /**
+   * @var boolean $ErrorIfExists
+   */
+  public $ErrorIfExists;
 }
 
 class ExactTarget_ImportDefinition {
-  public $AllowErrors; // boolean
-  public $DestinationObject; // ExactTarget_APIObject
-  public $FieldMappingType; // ExactTarget_ImportDefinitionFieldMappingType
-  public $FieldMaps; // ExactTarget_FieldMaps
-  public $FileSpec; // string
-  public $FileType; // ExactTarget_FileType
-  public $Notification; // ExactTarget_AsyncResponse
-  public $RetrieveFileTransferLocation; // ExactTarget_FileTransferLocation
-  public $SubscriberImportType; // ExactTarget_ImportDefinitionSubscriberImportType
-  public $UpdateType; // ExactTarget_ImportDefinitionUpdateType
-  public $MaxFileAge; // int
-  public $MaxFileAgeScheduleOffset; // int
-  public $MaxImportFrequency; // int
-  public $Delimiter; // string
-  public $HeaderLines; // int
-  public $AutoGenerateDestination; // ExactTarget_ImportDefinitionAutoGenerateDestination
-  public $ControlColumn; // string
-  public $ControlColumnDefaultAction; // ExactTarget_ImportDefinitionColumnBasedActionType
-  public $ControlColumnActions; // ExactTarget_ControlColumnActions
-  public $EndOfLineRepresentation; // string
-  public $NullRepresentation; // string
-  public $StandardQuotedStrings; // boolean
-  public $Filter; // string
-  public $DateFormattingLocale; // ExactTarget_Locale
+  /**
+   * @var boolean $AllowErrors
+   */
+  public $AllowErrors;
+  /**
+   * @var ExactTarget_APIObject $DestinationObject
+   */
+  public $DestinationObject;
+  /**
+   * @var ExactTarget_ImportDefinitionFieldMappingType $FieldMappingType
+   */
+  public $FieldMappingType;
+  /**
+   * @var ExactTarget_FieldMaps $FieldMaps
+   */
+  public $FieldMaps;
+  /**
+   * @var string $FileSpec
+   */
+  public $FileSpec;
+  /**
+   * @var ExactTarget_FileType $FileType
+   */
+  public $FileType;
+  /**
+   * @var ExactTarget_AsyncResponse $Notification
+   */
+  public $Notification;
+  /**
+   * @var ExactTarget_FileTransferLocation $RetrieveFileTransferLocation
+   */
+  public $RetrieveFileTransferLocation;
+  /**
+   * @var ExactTarget_ImportDefinitionSubscriberImportType $SubscriberImportType
+   */
+  public $SubscriberImportType;
+  /**
+   * @var ExactTarget_ImportDefinitionUpdateType $UpdateType
+   */
+  public $UpdateType;
+  /**
+   * @var int $MaxFileAge
+   */
+  public $MaxFileAge;
+  /**
+   * @var int $MaxFileAgeScheduleOffset
+   */
+  public $MaxFileAgeScheduleOffset;
+  /**
+   * @var int $MaxImportFrequency
+   */
+  public $MaxImportFrequency;
+  /**
+   * @var string $Delimiter
+   */
+  public $Delimiter;
+  /**
+   * @var int $HeaderLines
+   */
+  public $HeaderLines;
+  /**
+   * @var ExactTarget_ImportDefinitionAutoGenerateDestination $AutoGenerateDestination
+   */
+  public $AutoGenerateDestination;
+  /**
+   * @var string $ControlColumn
+   */
+  public $ControlColumn;
+  /**
+   * @var ExactTarget_ImportDefinitionColumnBasedActionType $ControlColumnDefaultAction
+   */
+  public $ControlColumnDefaultAction;
+  /**
+   * @var ExactTarget_ControlColumnActions $ControlColumnActions
+   */
+  public $ControlColumnActions;
+  /**
+   * @var string $EndOfLineRepresentation
+   */
+  public $EndOfLineRepresentation;
+  /**
+   * @var string $NullRepresentation
+   */
+  public $NullRepresentation;
+  /**
+   * @var boolean $StandardQuotedStrings
+   */
+  public $StandardQuotedStrings;
+  /**
+   * @var string $Filter
+   */
+  public $Filter;
+  /**
+   * @var ExactTarget_Locale $DateFormattingLocale
+   */
+  public $DateFormattingLocale;
 }
 
 class ExactTarget_FieldMaps {
-  public $FieldMap; // ExactTarget_FieldMap
+  /**
+   * @var ExactTarget_FieldMap $FieldMap
+   */
+  public $FieldMap;
 }
 
 class ExactTarget_ControlColumnActions {
-  public $ControlColumnAction; // ExactTarget_ImportDefinitionColumnBasedAction
+  /**
+   * @var ExactTarget_ImportDefinitionColumnBasedAction $ControlColumnAction
+   */
+  public $ControlColumnAction;
 }
 
 class ExactTarget_ImportDefinitionFieldMap {
-  public $SourceName; // string
-  public $SourceOrdinal; // int
-  public $DestinationName; // string
+  /**
+   * @var string $SourceName
+   */
+  public $SourceName;
+  /**
+   * @var int $SourceOrdinal
+   */
+  public $SourceOrdinal;
+  /**
+   * @var string $DestinationName
+   */
+  public $DestinationName;
 }
 
 class ExactTarget_ImportResultsSummary {
-  public $ImportDefinitionCustomerKey; // string
-  public $StartDate; // string
-  public $EndDate; // string
-  public $DestinationID; // string
-  public $NumberSuccessful; // int
-  public $NumberDuplicated; // int
-  public $NumberErrors; // int
-  public $TotalRows; // int
-  public $ImportType; // string
-  public $ImportStatus; // string
-  public $TaskResultID; // int
+  /**
+   * @var string $ImportDefinitionCustomerKey
+   */
+  public $ImportDefinitionCustomerKey;
+  /**
+   * @var string $StartDate
+   */
+  public $StartDate;
+  /**
+   * @var string $EndDate
+   */
+  public $EndDate;
+  /**
+   * @var string $DestinationID
+   */
+  public $DestinationID;
+  /**
+   * @var int $NumberSuccessful
+   */
+  public $NumberSuccessful;
+  /**
+   * @var int $NumberDuplicated
+   */
+  public $NumberDuplicated;
+  /**
+   * @var int $NumberErrors
+   */
+  public $NumberErrors;
+  /**
+   * @var int $TotalRows
+   */
+  public $TotalRows;
+  /**
+   * @var string $ImportType
+   */
+  public $ImportType;
+  /**
+   * @var string $ImportStatus
+   */
+  public $ImportStatus;
+  /**
+   * @var int $TaskResultID
+   */
+  public $TaskResultID;
 }
 
 class ExactTarget_FilterDefinition {
-  public $Name; // string
-  public $Description; // string
-  public $DataSource; // ExactTarget_APIObject
-  public $DataFilter; // ExactTarget_FilterPart
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var ExactTarget_APIObject $DataSource
+   */
+  public $DataSource;
+  /**
+   * @var ExactTarget_FilterPart $DataFilter
+   */
+  public $DataFilter;
 }
 
 class ExactTarget_GroupDefinition {
@@ -2158,44 +5241,122 @@ class ExactTarget_FileTransferActivity {
 }
 
 class ExactTarget_ListSend {
-  public $SendID; // int
-  public $List; // ExactTarget_List
-  public $Duplicates; // int
-  public $InvalidAddresses; // int
-  public $ExistingUndeliverables; // int
-  public $ExistingUnsubscribes; // int
-  public $HardBounces; // int
-  public $SoftBounces; // int
-  public $OtherBounces; // int
-  public $ForwardedEmails; // int
-  public $UniqueClicks; // int
-  public $UniqueOpens; // int
-  public $NumberSent; // int
-  public $NumberDelivered; // int
-  public $Unsubscribes; // int
-  public $MissingAddresses; // int
-  public $PreviewURL; // string
-  public $Links; // ExactTarget_Link
-  public $Events; // ExactTarget_TrackingEvent
+  /**
+   * @var int $SendID
+   */
+  public $SendID;
+  /**
+   * @var ExactTarget_List $List
+   */
+  public $List;
+  /**
+   * @var int $Duplicates
+   */
+  public $Duplicates;
+  /**
+   * @var int $InvalidAddresses
+   */
+  public $InvalidAddresses;
+  /**
+   * @var int $ExistingUndeliverables
+   */
+  public $ExistingUndeliverables;
+  /**
+   * @var int $ExistingUnsubscribes
+   */
+  public $ExistingUnsubscribes;
+  /**
+   * @var int $HardBounces
+   */
+  public $HardBounces;
+  /**
+   * @var int $SoftBounces
+   */
+  public $SoftBounces;
+  /**
+   * @var int $OtherBounces
+   */
+  public $OtherBounces;
+  /**
+   * @var int $ForwardedEmails
+   */
+  public $ForwardedEmails;
+  /**
+   * @var int $UniqueClicks
+   */
+  public $UniqueClicks;
+  /**
+   * @var int $UniqueOpens
+   */
+  public $UniqueOpens;
+  /**
+   * @var int $NumberSent
+   */
+  public $NumberSent;
+  /**
+   * @var int $NumberDelivered
+   */
+  public $NumberDelivered;
+  /**
+   * @var int $Unsubscribes
+   */
+  public $Unsubscribes;
+  /**
+   * @var int $MissingAddresses
+   */
+  public $MissingAddresses;
+  /**
+   * @var string $PreviewURL
+   */
+  public $PreviewURL;
+  /**
+   * @var ExactTarget_Link $Links
+   */
+  public $Links;
+  /**
+   * @var ExactTarget_TrackingEvent $Events
+   */
+  public $Events;
 }
 
 class ExactTarget_LinkSend {
-  public $SendID; // int
-  public $Link; // ExactTarget_Link
+  /**
+   * @var int $SendID
+   */
+  public $SendID;
+  /**
+   * @var ExactTarget_Link $Link
+   */
+  public $Link;
 }
 
 class ExactTarget_ObjectExtension {
-  public $Type; // string
-  public $Properties; // ExactTarget_Properties
+  /**
+   * @var string $Type
+   */
+  public $Type;
+  /**
+   * @var ExactTarget_Properties $Properties
+   */
+  public $Properties;
 }
 
 class ExactTarget_Properties {
-  public $Property; // ExactTarget_APIProperty
+  /**
+   * @var ExactTarget_APIProperty $Property
+   */
+  public $Property;
 }
 
 class ExactTarget_PublicKeyManagement {
-  public $Name; // string
-  public $Key; // base64Binary
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var base64Binary $Key
+   */
+  public $Key;
 }
 
 class ExactTarget_SecurityObject {
@@ -2208,23 +5369,47 @@ class ExactTarget_SystemStatusOptions {
 }
 
 class ExactTarget_SystemStatusRequestMsg {
-  public $Options; // ExactTarget_SystemStatusOptions
+  /**
+   * @var ExactTarget_SystemStatusOptions $Options
+   */
+  public $Options;
 }
 
 class ExactTarget_SystemStatusResult {
-  public $SystemStatus; // ExactTarget_SystemStatusType
-  public $Outages; // ExactTarget_Outages
+  /**
+   * @var ExactTarget_SystemStatusType $SystemStatus
+   */
+  public $SystemStatus;
+  /**
+   * @var ExactTarget_Outages $Outages
+   */
+  public $Outages;
 }
 
 class ExactTarget_Outages {
-  public $Outage; // ExactTarget_SystemOutage
+  /**
+   * @var ExactTarget_SystemOutage $Outage
+   */
+  public $Outage;
 }
 
 class ExactTarget_SystemStatusResponseMsg {
-  public $Results; // ExactTarget_Results
-  public $OverallStatus; // string
-  public $OverallStatusMessage; // string
-  public $RequestID; // string
+  /**
+   * @var ExactTarget_Results $Results
+   */
+  public $Results;
+  /**
+   * @var string $OverallStatus
+   */
+  public $OverallStatus;
+  /**
+   * @var string $OverallStatusMessage
+   */
+  public $OverallStatusMessage;
+  /**
+   * @var string $RequestID
+   */
+  public $RequestID;
 }
 
 
@@ -2242,130 +5427,367 @@ class ExactTarget_Authentication {
 }
 
 class ExactTarget_UsernameAuthentication {
-  public $UserName; // string
-  public $PassWord; // string
+  /**
+   * @var string $UserName
+   */
+  public $UserName;
+  /**
+   * @var string $PassWord
+   */
+  public $PassWord;
 }
 
 class ExactTarget_ResourceSpecification {
-  public $URN; // string
-  public $Authentication; // ExactTarget_Authentication
+  /**
+   * @var string $URN
+   */
+  public $URN;
+  /**
+   * @var ExactTarget_Authentication $Authentication
+   */
+  public $Authentication;
 }
 
 class ExactTarget_Portfolio {
-  public $Source; // ExactTarget_ResourceSpecification
-  public $CategoryID; // int
-  public $FileName; // string
-  public $DisplayName; // string
-  public $Description; // string
-  public $TypeDescription; // string
-  public $IsUploaded; // boolean
-  public $IsActive; // boolean
-  public $FileSizeKB; // int
-  public $ThumbSizeKB; // int
-  public $FileWidthPX; // int
-  public $FileHeightPX; // int
-  public $FileURL; // string
-  public $ThumbURL; // string
-  public $CacheClearTime; // dateTime
-  public $CategoryType; // string
+  /**
+   * @var ExactTarget_ResourceSpecification $Source
+   */
+  public $Source;
+  /**
+   * @var int $CategoryID
+   */
+  public $CategoryID;
+  /**
+   * @var string $FileName
+   */
+  public $FileName;
+  /**
+   * @var string $DisplayName
+   */
+  public $DisplayName;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var string $TypeDescription
+   */
+  public $TypeDescription;
+  /**
+   * @var boolean $IsUploaded
+   */
+  public $IsUploaded;
+  /**
+   * @var boolean $IsActive
+   */
+  public $IsActive;
+  /**
+   * @var int $FileSizeKB
+   */
+  public $FileSizeKB;
+  /**
+   * @var int $ThumbSizeKB
+   */
+  public $ThumbSizeKB;
+  /**
+   * @var int $FileWidthPX
+   */
+  public $FileWidthPX;
+  /**
+   * @var int $FileHeightPX
+   */
+  public $FileHeightPX;
+  /**
+   * @var string $FileURL
+   */
+  public $FileURL;
+  /**
+   * @var string $ThumbURL
+   */
+  public $ThumbURL;
+  /**
+   * @var dateTime $CacheClearTime
+   */
+  public $CacheClearTime;
+  /**
+   * @var string $CategoryType
+   */
+  public $CategoryType;
 }
 
 class ExactTarget_Layout {
-  public $LayoutName; // string
+  /**
+   * @var string $LayoutName
+   */
+  public $LayoutName;
 }
 
 class ExactTarget_QueryDefinition {
-  public $QueryText; // string
-  public $TargetType; // string
-  public $DataExtensionTarget; // ExactTarget_InteractionBaseObject
-  public $TargetUpdateType; // string
-  public $FileSpec; // string
-  public $FileType; // string
-  public $Status; // string
-  public $CategoryID; // int
+  /**
+   * @var string $QueryText
+   */
+  public $QueryText;
+  /**
+   * @var string $TargetType
+   */
+  public $TargetType;
+  /**
+   * @var ExactTarget_InteractionBaseObject $DataExtensionTarget
+   */
+  public $DataExtensionTarget;
+  /**
+   * @var string $TargetUpdateType
+   */
+  public $TargetUpdateType;
+  /**
+   * @var string $FileSpec
+   */
+  public $FileSpec;
+  /**
+   * @var string $FileType
+   */
+  public $FileType;
+  /**
+   * @var string $Status
+   */
+  public $Status;
+  /**
+   * @var int $CategoryID
+   */
+  public $CategoryID;
 }
 
 class ExactTarget_IntegrationProfile {
-  public $ProfileID; // string
-  public $SubscriberKey; // string
-  public $ExternalID; // string
-  public $ExternalType; // string
+  /**
+   * @var string $ProfileID
+   */
+  public $ProfileID;
+  /**
+   * @var string $SubscriberKey
+   */
+  public $SubscriberKey;
+  /**
+   * @var string $ExternalID
+   */
+  public $ExternalID;
+  /**
+   * @var string $ExternalType
+   */
+  public $ExternalType;
 }
 
 class ExactTarget_IntegrationProfileDefinition {
-  public $ProfileID; // string
-  public $Name; // string
-  public $Description; // string
-  public $ExternalSystemType; // int
+  /**
+   * @var string $ProfileID
+   */
+  public $ProfileID;
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var int $ExternalSystemType
+   */
+  public $ExternalSystemType;
 }
 
 class ExactTarget_ReplyMailManagementConfiguration {
-  public $EmailDisplayName; // string
-  public $ReplySubdomain; // string
-  public $EmailReplyAddress; // string
-  public $DNSRedirectComplete; // boolean
-  public $DeleteAutoReplies; // boolean
-  public $SupportUnsubscribes; // boolean
-  public $SupportUnsubKeyword; // boolean
-  public $SupportUnsubscribeKeyword; // boolean
-  public $SupportRemoveKeyword; // boolean
-  public $SupportOptOutKeyword; // boolean
-  public $SupportLeaveKeyword; // boolean
-  public $SupportMisspelledKeywords; // boolean
-  public $SendAutoReplies; // boolean
-  public $AutoReplySubject; // string
-  public $AutoReplyBody; // string
-  public $ForwardingAddress; // string
+  /**
+   * @var string $EmailDisplayName
+   */
+  public $EmailDisplayName;
+  /**
+   * @var string $ReplySubdomain
+   */
+  public $ReplySubdomain;
+  /**
+   * @var string $EmailReplyAddress
+   */
+  public $EmailReplyAddress;
+  /**
+   * @var boolean $DNSRedirectComplete
+   */
+  public $DNSRedirectComplete;
+  /**
+   * @var boolean $DeleteAutoReplies
+   */
+  public $DeleteAutoReplies;
+  /**
+   * @var boolean $SupportUnsubscribes
+   */
+  public $SupportUnsubscribes;
+  /**
+   * @var boolean $SupportUnsubKeyword
+   */
+  public $SupportUnsubKeyword;
+  /**
+   * @var boolean $SupportUnsubscribeKeyword
+   */
+  public $SupportUnsubscribeKeyword;
+  /**
+   * @var boolean $SupportRemoveKeyword
+   */
+  public $SupportRemoveKeyword;
+  /**
+   * @var boolean $SupportOptOutKeyword
+   */
+  public $SupportOptOutKeyword;
+  /**
+   * @var boolean $SupportLeaveKeyword
+   */
+  public $SupportLeaveKeyword;
+  /**
+   * @var boolean $SupportMisspelledKeywords
+   */
+  public $SupportMisspelledKeywords;
+  /**
+   * @var boolean $SendAutoReplies
+   */
+  public $SendAutoReplies;
+  /**
+   * @var string $AutoReplySubject
+   */
+  public $AutoReplySubject;
+  /**
+   * @var string $AutoReplyBody
+   */
+  public $AutoReplyBody;
+  /**
+   * @var string $ForwardingAddress
+   */
+  public $ForwardingAddress;
 }
 
 class ExactTarget_FileTrigger {
-  public $ExternalReference; // string
-  public $Type; // string
-  public $Status; // string
-  public $StatusMessage; // string
-  public $RequestParameterDetail; // string
-  public $ResponseControlManifest; // string
-  public $FileName; // string
-  public $Description; // string
-  public $Name; // string
-  public $LastPullDate; // dateTime
-  public $ScheduledDate; // dateTime
-  public $IsActive; // boolean
-  public $FileTriggerProgramID; // string
+  /**
+   * @var string $ExternalReference
+   */
+  public $ExternalReference;
+  /**
+   * @var string $Type
+   */
+  public $Type;
+  /**
+   * @var string $Status
+   */
+  public $Status;
+  /**
+   * @var string $StatusMessage
+   */
+  public $StatusMessage;
+  /**
+   * @var string $RequestParameterDetail
+   */
+  public $RequestParameterDetail;
+  /**
+   * @var string $ResponseControlManifest
+   */
+  public $ResponseControlManifest;
+  /**
+   * @var string $FileName
+   */
+  public $FileName;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var dateTime $LastPullDate
+   */
+  public $LastPullDate;
+  /**
+   * @var dateTime $ScheduledDate
+   */
+  public $ScheduledDate;
+  /**
+   * @var boolean $IsActive
+   */
+  public $IsActive;
+  /**
+   * @var string $FileTriggerProgramID
+   */
+  public $FileTriggerProgramID;
 }
 
 class ExactTarget_FileTriggerTypeLastPull {
-  public $ExternalReference; // string
-  public $Type; // string
-  public $LastPullDate; // dateTime
+  /**
+   * @var string $ExternalReference
+   */
+  public $ExternalReference;
+  /**
+   * @var string $Type
+   */
+  public $Type;
+  /**
+   * @var dateTime $LastPullDate
+   */
+  public $LastPullDate;
 }
 
 class ExactTarget_ProgramManifestTemplate {
-  public $Type; // string
-  public $OperationType; // string
-  public $Content; // string
+  /**
+   * @var string $Type
+   */
+  public $Type;
+  /**
+   * @var string $OperationType
+   */
+  public $OperationType;
+  /**
+   * @var string $Content
+   */
+  public $Content;
 }
 
 class ExactTarget_SubscriberAddress {
-  public $AddressType; // string
-  public $Address; // string
-  public $Statuses; // ExactTarget_Statuses
+  /**
+   * @var string $AddressType
+   */
+  public $AddressType;
+  /**
+   * @var string $Address
+   */
+  public $Address;
+  /**
+   * @var ExactTarget_Statuses $Statuses
+   */
+  public $Statuses;
 }
 
 class ExactTarget_Statuses {
-  public $Status; // ExactTarget_AddressStatus
+  /**
+   * @var ExactTarget_AddressStatus $Status
+   */
+  public $Status;
 }
 
 class ExactTarget_SMSAddress {
-  public $Carrier; // string
+  /**
+   * @var string $Carrier
+   */
+  public $Carrier;
 }
 
 class ExactTarget_EmailAddress {
-  public $Type; // ExactTarget_EmailType
+  /**
+   * @var ExactTarget_EmailType $Type
+   */
+  public $Type;
 }
 
 class ExactTarget_AddressStatus {
-  public $Status; // ExactTarget_SubscriberAddressStatus
+  /**
+   * @var ExactTarget_SubscriberAddressStatus $Status
+   */
+  public $Status;
 }
 
 class ExactTarget_SubscriberAddressStatus {
@@ -2375,53 +5797,131 @@ class ExactTarget_SubscriberAddressStatus {
 }
 
 class ExactTarget_Publication {
-  public $Name; // string
-  public $IsActive; // boolean
-  public $SendClassification; // ExactTarget_SendClassification
-  public $Subscribers; // ExactTarget_Subscribers
-  public $Category; // int
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var boolean $IsActive
+   */
+  public $IsActive;
+  /**
+   * @var ExactTarget_SendClassification $SendClassification
+   */
+  public $SendClassification;
+  /**
+   * @var ExactTarget_Subscribers $Subscribers
+   */
+  public $Subscribers;
+  /**
+   * @var int $Category
+   */
+  public $Category;
 }
 
 
 class ExactTarget_PublicationSubscriber {
-  public $Publication; // ExactTarget_Publication
-  public $Subscriber; // ExactTarget_Subscriber
+  /**
+   * @var ExactTarget_Publication $Publication
+   */
+  public $Publication;
+  /**
+   * @var ExactTarget_Subscriber $Subscriber
+   */
+  public $Subscriber;
 }
 
 class ExactTarget_PlatformApplication {
-  public $Package; // ExactTarget_PlatformApplicationPackage
-  public $Packages; // ExactTarget_PlatformApplicationPackage
-  public $ResourceSpecification; // ExactTarget_ResourceSpecification
-  public $DeveloperVersion; // string
+  /**
+   * @var ExactTarget_PlatformApplicationPackage $Package
+   */
+  public $Package;
+  /**
+   * @var ExactTarget_PlatformApplicationPackage $Packages
+   */
+  public $Packages;
+  /**
+   * @var ExactTarget_ResourceSpecification $ResourceSpecification
+   */
+  public $ResourceSpecification;
+  /**
+   * @var string $DeveloperVersion
+   */
+  public $DeveloperVersion;
 }
 
 class ExactTarget_PlatformApplicationPackage {
-  public $ResourceSpecification; // ExactTarget_ResourceSpecification
-  public $SigningKey; // ExactTarget_PublicKeyManagement
-  public $IsUpgrade; // boolean
-  public $DeveloperVersion; // string
+  /**
+   * @var ExactTarget_ResourceSpecification $ResourceSpecification
+   */
+  public $ResourceSpecification;
+  /**
+   * @var ExactTarget_PublicKeyManagement $SigningKey
+   */
+  public $SigningKey;
+  /**
+   * @var boolean $IsUpgrade
+   */
+  public $IsUpgrade;
+  /**
+   * @var string $DeveloperVersion
+   */
+  public $DeveloperVersion;
 }
 
 class ExactTarget_SuppressionListDefinition {
-  public $Name; // string
-  public $Category; // long
-  public $Description; // string
-  public $Contexts; // ExactTarget_Contexts
-  public $Fields; // ExactTarget_Fields
+  /**
+   * @var string $Name
+   */
+  public $Name;
+  /**
+   * @var long $Category
+   */
+  public $Category;
+  /**
+   * @var string $Description
+   */
+  public $Description;
+  /**
+   * @var ExactTarget_Contexts $Contexts
+   */
+  public $Contexts;
+  /**
+   * @var ExactTarget_Fields $Fields
+   */
+  public $Fields;
 }
 
 class ExactTarget_Contexts {
-  public $Context; // ExactTarget_SuppressionListContext
+  /**
+   * @var ExactTarget_SuppressionListContext $Context
+   */
+  public $Context;
 }
 
 
 
 class ExactTarget_SuppressionListContext {
-  public $Context; // ExactTarget_SuppressionListContextEnum
-  public $SendClassificationType; // ExactTarget_SendClassificationTypeEnum
-  public $SendClassification; // ExactTarget_SendClassification
-  public $Send; // ExactTarget_Send
-  public $Definition; // ExactTarget_SuppressionListDefinition
+  /**
+   * @var ExactTarget_SuppressionListContextEnum $Context
+   */
+  public $Context;
+  /**
+   * @var ExactTarget_SendClassificationTypeEnum $SendClassificationType
+   */
+  public $SendClassificationType;
+  /**
+   * @var ExactTarget_SendClassification $SendClassification
+   */
+  public $SendClassification;
+  /**
+   * @var ExactTarget_Send $Send
+   */
+  public $Send;
+  /**
+   * @var ExactTarget_SuppressionListDefinition $Definition
+   */
+  public $Definition;
 }
 
 class ExactTarget_SuppressionListContextEnum {
@@ -2433,5 +5933,8 @@ class ExactTarget_SuppressionListContextEnum {
 }
 
 class ExactTarget_SuppressionListData {
-  public $Properties; // ExactTarget_Properties
+  /**
+   * @var ExactTarget_Properties $Properties
+   */
+  public $Properties;
 }
